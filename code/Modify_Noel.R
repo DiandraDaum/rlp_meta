@@ -1,5 +1,7 @@
-
 #modify Noel
+#Code to modify the original Human-2020-Noël-LR-pairs.xlsx and the 
+#Human-2020-Noël-LR-pairs.xlsx files to show all the ligand1/2/3/4 and receptor 1/2/3/4/5 pairs.
+
 # Load necessary libraries
 library(readxl)
 library(tidyr)
