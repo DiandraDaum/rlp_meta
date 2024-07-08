@@ -91,10 +91,11 @@ if (nrow(duplicates) > 0) {
   print(duplicates[, c("ligand", "receptor")])
 }
 
-# Remove duplicates and keep one copy, then aggregate file names
+# Remove duplicates and keep one copy, then aggregate file names and count
 results <- results %>% 
   group_by(ligand, receptor) %>% 
-  summarise(file = paste(unique(file), collapse = ";"))
+  summarise(file = paste(unique(file), collapse = ";"), 
+            count = n())
 
 n_after_distinct <- nrow(results)
 
