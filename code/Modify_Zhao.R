@@ -5,7 +5,7 @@ library(readr)
 library(tidyr)
 
 # Specify the input file path
-input_file <- "/Users/diandra/Downloads/try/Human-2023-Zhao-LR-pairs.tsv"
+input_file <- "/Users/diandra/Downloads/LewisLabUCSD/Human-2023-Zhao-LR-pairs.tsv"
 
 # Load the TSV file into a data frame
 df <- read_tsv(input_file)
