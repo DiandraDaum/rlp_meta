@@ -5,7 +5,7 @@ library(readr)
 library(tidyr)
 
 # Specify the input file path
-input_file <- "/Users/diandra/Downloads/LewisLabUCSD/Human-2023-Zhao-LR-pairs.tsv"
+input_file <- "/Users/diandra/rlp_meta/data/LewisLabUCSD/Human-2023-Zhao-LR-pairs.tsv"
 
 # Load the TSV file into a data frame
 df <- read_tsv(input_file)
@@ -20,11 +20,11 @@ if ("interaction_name" %in% names(df)) {
 # Get the input file name without the extension
 file_name <- gsub("\\.tsv", "", basename(input_file))
 
-# Get the input file directory
-dir <- dirname(input_file)
+# Specify the new output directory
+new_dir <- "/Users/diandra/rlp_meta/data/new_files"
 
 # Save the updated data frame to a new TSV file with "new" in the end
-output_file <- file.path(dir, paste0(file_name, "_new.tsv"))
+output_file <- file.path(new_dir, paste0(file_name, "_new.tsv"))
 write_tsv(df, output_file)
 
 
