@@ -31,7 +31,7 @@ draw.pairwise.venn(
   alpha = 0.5,
   main = "Venn Diagram: Ximerakis vs mitab"
 )
-#identical, remove mitab
+#identical 2293, remove mitab
 
 library(readxl)
 library(VennDiagram)
@@ -189,7 +189,7 @@ draw.pairwise.venn(
   alpha = 0.5,
   main = "Venn Diagram: file1 vs file2"
 )
-#file 2 418 contains file 1 222, remove ICELLNETv2
+#file 2 418 contains file 1 222, but file 1 has 1, keep both
 
 
 
