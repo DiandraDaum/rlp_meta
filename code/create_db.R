@@ -14,7 +14,7 @@ library(stringr)
 library(writexl)
 
 # Set the folder path and output file path
-folder_path <- "/Users/diandra/rlp_meta/data/all_files"
+folder_path <- "/Users/diandra/rlp_meta/data/input_files"
 
 output_file_path <- "/Users/diandra/rlp_meta/results/alldbfull.csv" #csv output
 output_file_path2 <- "/Users/diandra/rlp_meta/results/alldbfull.xlsx" #xlsx output
