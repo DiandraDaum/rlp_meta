@@ -1,5 +1,5 @@
 #convert Omni
-#Code to modify the Human-2020-Noël-LR-pairs.tsv file to convert Uniprot IDs to gene symbols.
+#Code to modify the OmniPathPPIs.tsv file to get the gene symbol from the uniprot ID
 
 #from source target to ligand receptor
 #BiocManager::install("org.Hs.eg.db")
