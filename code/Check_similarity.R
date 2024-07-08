@@ -189,21 +189,88 @@ draw.pairwise.venn(
   alpha = 0.5,
   main = "Venn Diagram: file1 vs file2"
 )
-
+#file 2 418 contains file 1 222, remove ICELLNETv2
 
 
 
 #check Human-2020-Shao-LR-pairs.txt and Celltalk_human_lr_pair.txt
-Shao20 <- read_table("/Users/diandra/rlp_meta/data/input_files_for_db/Human-2020-Shao-LR-pairs.txt")
-Celltalk <- read_table("/Users/diandra/rlp_meta/data/input_files_for_db/Celltalk_human_lr_pair.txt")
+file1 <- read_table("/Users/diandra/rlp_meta/data/input_files_for_db/Human-2020-Shao-LR-pairs.txt")
+file2 <- read_table("/Users/diandra/rlp_meta/data/input_files_for_db/Celltalk_human_lr_pair.txt")
+# Extract the unique identifiers from each data frame
+file1_identifiers <- unique(file1$lr_pair)
+file2_identifiers <- unique(file2$lr_pair)
 
+# Calculate the sizes of the sets and their intersection
+only_file1 <- length(setdiff(file1_identifiers, file2_identifiers))
+only_file2 <- length(setdiff(file2_identifiers, file1_identifiers))
+both <- length(intersect(file1_identifiers, file2_identifiers))
+
+
+# Get the identifiers that are unique to each file
+unique_to_file1 <- setdiff(file1_identifiers, file2_identifiers)
+unique_to_file2 <- setdiff(file2_identifiers, file1_identifiers)
+
+# Subset the original data frames to get the corresponding data
+file1_unique_data <- file1[file1$lr_pair %in% unique_to_file1, ]
+file2_unique_data <- file2[file2$lr_pair %in% unique_to_file2, ]
+
+# Print the unique data
+print(file1_unique_data)
+print(file2_unique_data)
+
+# Create a Venn diagram
+# Create a new plot window
+dev.new()
+draw.pairwise.venn(
+  area1 = only_file1 + both,
+  area2 = only_file2 + both,
+  cross.area = both,
+  category = c("file1", "file2"),
+  fill = "skyblue",
+  alpha = 0.5,
+  main = "Venn Diagram: file1 vs file2"
+)
+#output:3398 identity, remove celltalk
 
 
 #check Human-2022-Zheng-MetSensor-pairs.tsv and met_sen_October-25-2022_14-52-47.tsv
-Zheng22 <- read_tsv("/Users/diandra/rlp_meta/data/input_files_for_db/Human-2022-Zheng-MetSensor-pairs.tsv")
-met22 <- read_tsv("/Users/diandra/rlp_meta/data/input_files_for_db/met_sen_October-25-2022_14-52-47.tsv")
+file1 <- read_tsv("/Users/diandra/rlp_meta/data/input_files_for_db/Human-2022-Zheng-MetSensor-pairs.tsv")
+file2 <- read_tsv("/Users/diandra/rlp_meta/data/input_files_for_db/met_sen_October-25-2022_14-52-47.tsv")
+# Extract the unique identifiers from each data frame
+file1_identifiers <- unique(file1$HMDB_ID)
+file2_identifiers <- unique(file2$HMDB_ID)
+
+# Calculate the sizes of the sets and their intersection
+only_file1 <- length(setdiff(file1_identifiers, file2_identifiers))
+only_file2 <- length(setdiff(file2_identifiers, file1_identifiers))
+both <- length(intersect(file1_identifiers, file2_identifiers))
 
 
+# Get the identifiers that are unique to each file
+unique_to_file1 <- setdiff(file1_identifiers, file2_identifiers)
+unique_to_file2 <- setdiff(file2_identifiers, file1_identifiers)
+
+# Subset the original data frames to get the corresponding data
+file1_unique_data <- file1[file1$HMDB_ID %in% unique_to_file1, ]
+file2_unique_data <- file2[file2$HMDB_ID %in% unique_to_file2, ]
+
+# Print the unique data
+print(file1_unique_data)
+print(file2_unique_data)
+
+# Create a Venn diagram
+# Create a new plot window
+dev.new()
+draw.pairwise.venn(
+  area1 = only_file1 + both,
+  area2 = only_file2 + both,
+  cross.area = both,
+  category = c("file1", "file2"),
+  fill = "skyblue",
+  alpha = 0.5,
+  main = "Venn Diagram: file1 vs file2"
+)
+#file 1 440, file 2 432, remove met_sen
 
 
 
