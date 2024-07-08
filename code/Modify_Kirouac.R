@@ -1,5 +1,6 @@
-
 #modify Kirouac
+#Code to modify the original Human-2010-Kirouac-LR-pairs.xlsx to show the gene symbols only.
+
 # Load the readxl package to read xlsx files
 library(readxl)
 # Load the dplyr package for data manipulation
