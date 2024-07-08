@@ -1,4 +1,7 @@
 #modify Vento
+#Code to modify Human-2020-Noël-LR-pairs.csv and Human-2020-Noël-LR-pairs.csv 
+#to extract ligand and receptor gene symbols.
+
 # Read the .csv file
 #data <- read.csv("/Users/diandra/rlp_meta/data/Cellphone/Human-2018-Vento-Tormo-LR-pairs.csv")
 data <- read.csv("/Users/diandra/rlp_meta/data/Cellphone/interaction_input_Vento_Cellphonedbv5.csv", stringsAsFactors = FALSE)
