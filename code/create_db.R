@@ -21,7 +21,7 @@ output_file_path2 <- "/Users/diandra/rlp_meta/results/alldbfull.xlsx" #xlsx outp
 
 # Define the possible column names for ligand and receptor
 ligand_cols <- c("LIGAND", "ligand", "Ligand (Symbol)", "From", "Ligand.ApprovedSymbol", "ligand.symbol", "Ligand",  "AliasA", "Ligand gene symbol", "HMDB_ID", "ligand_gene_symbol", "source_genesymbol", "from", "Gene1_Symbol")
-receptor_cols <- c("RECEPTOR(S)", "receptor", "Receptor (Symbols)", "To", "Receptor.ApprovedSymbol", "receptor.symbol", "Receptor", "AliasB", "Receptor gene symbol", "receptor_gene_symbol", "target_genesymbol", "to", "Gene_name", "Gene2_Symbol")
+receptor_cols <- c("RECEPTOR(S)", "receptor", "Receptor (Symbols)", "To", "Receptor.ApprovedSymbol", "receptor.receptor", "Receptor", "AliasB", "Receptor gene symbol", "receptor_gene_symbol", "target_genesymbol", "to", "Gene_name", "Gene2_Symbol")
 
 # Initialize an empty data frame to store the results
 results <- data.frame(receptor = character(), ligand = character(), file = character())
@@ -85,30 +85,29 @@ results <- results_filtered
 
 # Identify and print the redundant pairs that were removed
 n_before_distinct <- nrow(results)
-results_sorted <- results %>% 
-  mutate(ligand = pmin(ligand, receptor), receptor = pmax(ligand, receptor))
-duplicates <- results_sorted[duplicated(results_sorted[, c("ligand", "receptor")]) | duplicated(results_sorted[, c("ligand", "receptor")], fromLast = TRUE), ]
+duplicates <- results[duplicated(results[, c("ligand", "receptor")]) | duplicated(results[, c("receptor", "ligand")], fromLast = TRUE), ]
 if (nrow(duplicates) > 0) {
   message("The following redundant pairs were removed:")
   print(duplicates[, c("ligand", "receptor")])
 }
 
-# Remove duplicates and keep one copy, then aggregate file names and count
-results_sorted <- results_sorted %>% 
+# Remove duplicates and keep one copy, then aggregate file names
+results <- results %>% 
+  mutate(ligand = toupper(ligand), receptor = toupper(receptor)) %>% 
   group_by(ligand, receptor) %>% 
-  summarise(file = paste(unique(file), collapse = ";"), 
+  summarise(file = paste(unique(file), collapse = "; "), 
             count = n())
 
-n_after_distinct <- nrow(results_sorted)
+n_after_distinct <- nrow(results)
 
 if (n_before_distinct!= n_after_distinct) {
   warning(paste("Duplicate rows were removed: ", n_before_distinct - n_after_distinct, " rows removed."))
 }
 
 # Rename the receptor column to receptor(s)
-names(results_sorted)[names(results_sorted) == "receptor"] <- "receptor(s)"
+names(results)[names(results) == "receptor"] <- "receptor(s)"
 
 # Write the results to the output file
-write.csv(results_sorted, output_file_path, row.names = FALSE)
-write_xlsx(results_sorted, output_file_path2)
+write.csv(results, output_file_path, row.names = FALSE)
+write_xlsx(results, output_file_path2)
 
