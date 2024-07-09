@@ -1,0 +1,68 @@
+#load CellChat database.rda
+
+load("/Users/diandra/rlp_meta/data/Cellchat/CellChatDB.human.rda")
+library(openxlsx)
+
+# Assuming CellChatDB.human is a list with 4 elements
+data_list <- CellChatDB.human
+
+# Create a workbook object
+wb <- createWorkbook()
+
+# Add each data frame to a separate sheet
+for (i in seq_along(data_list)) {
+  addWorksheet(wb, sheetName = paste0("Sheet", i))
+  writeData(wb, sheet = paste0("Sheet", i), data_list[[i]])
+}
+
+# Save the workbook to an xlsx file
+saveWorkbook(wb, "/Users/diandra/rlp_meta/data/Cellchat/CellChatDB.humanv2-2023-Jin-LR-pairs.xlsx", overwrite = TRUE)
+
+#load CellChat PPI.human.rda
+load("/Users/diandra/rlp_meta/data/Cellchat/PPI.human.rda")
+library(openxlsx)
+
+# Assuming CellChatDB.human is a list with 4 elements
+data_list <- CellChatDB.human
+
+# Create a workbook object
+wb <- createWorkbook()
+
+# Add each data frame to a separate sheet
+for (i in seq_along(data_list)) {
+  addWorksheet(wb, sheetName = paste0("Sheet", i))
+  writeData(wb, sheet = paste0("Sheet", i), data_list[[i]])
+}
+
+# Save the workbook to an xlsx file
+saveWorkbook(wb, "/Users/diandra/rlp_meta/data/Cellchat/PPI.humanv2-2023-Jin-LR-pairs.xlsx", overwrite = TRUE)
+
+
+
+#compare the two output files
+library(VennDiagram)
+library(readxl)
+
+# Load the two files
+CellChatDB.human <- read_excel("/Users/diandra/rlp_meta/data/Cellchat/CellChatDB.humanv2-2023-Jin-LR-pairs.xlsx")
+PPI.human <- read_excel("/Users/diandra/rlp_meta/data/Cellchat/PPI.humanv2-2023-Jin-LR-pairs.xlsx")
+
+# Extract the unique identifiers from each data frame
+CellChatDB_identifiers <- unique(CellChatDB.human$interaction_name)
+PPI_identifiers <- unique(PPI.human$interaction_name)
+
+# Calculate the sizes of the sets and their intersection
+only_CellChatDB <- length(setdiff(CellChatDB_identifiers, PPI_identifiers))
+only_PPI <- length(setdiff(PPI_identifiers, CellChatDB_identifiers))
+both <- length(intersect(CellChatDB_identifiers, PPI_identifiers))
+
+# Create a Venn diagram
+draw.pairwise.venn(
+  area1 = only_CellChatDB + both,
+  area2 = only_PPI + both,
+  cross.area = both,
+  category = c("CellChatDB.human", "PPI.human"),
+  fill = "skyblue",
+  alpha = 0.5,
+  main = "Venn Diagram: CellChatDB.human vs PPI.human"
+)
