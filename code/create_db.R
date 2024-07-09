@@ -84,30 +84,36 @@ if (nrow(results)!= nrow(results_filtered)) {
 results <- results_filtered
 
 # Identify and print the redundant pairs that were removed
+# Identify and print the redundant pairs that were removed
 n_before_distinct <- nrow(results)
-duplicates <- results[duplicated(results[, c("ligand", "receptor")]) | duplicated(results[, c("receptor", "ligand")], fromLast = TRUE), ]
+results_sorted <- results %>% 
+  mutate(ligand = toupper(ligand), receptor = toupper(receptor)) %>% 
+  mutate(temp = pmin(ligand, receptor), temp2 = pmax(ligand, receptor)) %>% 
+  mutate(ligand = temp, receptor = temp2) %>% 
+  select(-temp, -temp2)
+
+duplicates <- results_sorted[duplicated(results_sorted[, c("ligand", "receptor")]) | duplicated(results_sorted[, c("ligand", "receptor")], fromLast = TRUE), ]
 if (nrow(duplicates) > 0) {
   message("The following redundant pairs were removed:")
   print(duplicates[, c("ligand", "receptor")])
 }
 
 # Remove duplicates and keep one copy, then aggregate file names
-results <- results %>% 
-  mutate(ligand = toupper(ligand), receptor = toupper(receptor)) %>% 
+results_distinct <- results_sorted %>% 
   group_by(ligand, receptor) %>% 
   summarise(file = paste(unique(file), collapse = "; "), 
             count = n())
 
-n_after_distinct <- nrow(results)
+n_after_distinct <- nrow(results_distinct)
 
 if (n_before_distinct!= n_after_distinct) {
   warning(paste("Duplicate rows were removed: ", n_before_distinct - n_after_distinct, " rows removed."))
 }
 
 # Rename the receptor column to receptor(s)
-names(results)[names(results) == "receptor"] <- "receptor(s)"
+names(results_distinct)[names(results_distinct) == "receptor"] <- "receptor(s)"
 
 # Write the results to the output file
-write.csv(results, output_file_path, row.names = FALSE)
-write_xlsx(results, output_file_path2)
+write.csv(results_distinct, output_file_path, row.names = FALSE)
+write_xlsx(results_distinct, output_file_path2)
 
