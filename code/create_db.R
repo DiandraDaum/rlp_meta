@@ -14,13 +14,16 @@ library(stringr)
 library(writexl)
 
 # Set the folder path and output file path
-folder_path <- "/Users/diandra/rlp_meta/data/input_files_for_db"
+#folder_path <- "/Users/diandra/rlp_meta/data/input_files_for_db"
+folder_path <- "/Users/diandra/rlp_meta/data/new_files"
 
-output_file_path <- "/Users/diandra/rlp_meta/results/alldbfull.csv" #csv output
-output_file_path2 <- "/Users/diandra/rlp_meta/results/alldbfull.xlsx" #xlsx output
+#output_file_path <- "/Users/diandra/rlp_meta/results/alldbfull.csv" #csv output
+#output_file_path2 <- "/Users/diandra/rlp_meta/results/alldbfull.xlsx" #xlsx output
+output_file_path <- "/Users/diandra/rlp_meta/data/new_files/res1.csv" #csv output
+output_file_path2 <- "/Users/diandra/rlp_meta/data/new_files/res1.xlsx" #xlsx output
 
 # Define the possible column names for ligand and receptor
-ligand_cols <- c("LIGAND", "ligand", "Ligand (Symbol)", "From", "Ligand.ApprovedSymbol", "ligand.symbol", "Ligand",  "AliasA", "Ligand gene symbol", "HMDB_ID", "ligand_gene_symbol", "source_genesymbol", "from", "Gene1_Symbol")
+ligand_cols <- c("LIGAND", "ligand", "Ligand (Symbol)", "From", "Ligand.ApprovedSymbol", "ligand.symbol", "Ligand",  "AliasA", "Ligand gene symbol", "ligand_gene_symbol", "source_genesymbol", "from", "Gene1_Symbol")
 receptor_cols <- c("RECEPTOR(S)", "receptor", "Receptor (Symbols)", "To", "Receptor.ApprovedSymbol", "receptor.receptor", "Receptor", "AliasB", "Receptor gene symbol", "receptor_gene_symbol", "target_genesymbol", "to", "Gene_name", "Gene2_Symbol")
 
 # Initialize an empty data frame to store the results
@@ -92,7 +95,7 @@ results_sorted <- results %>%
   mutate(ligand = temp, receptor = temp2) %>% 
   select(-temp, -temp2)
 
-duplicates <- results_sorted[duplicated(results_sorted[, c("ligand", "receptor")]) | duplicated(results_sorted[, c("ligand", "receptor")], fromLast = TRUE), ]
+duplicates <- results_sorted[duplicated(results_sorted[, c("ligand", "receptor")]) | duplicated(results_sorted[, c("receptor", "ligand")], fromLast = TRUE), ]
 if (nrow(duplicates) > 0) {
   message("The following redundant pairs were removed:")
   print(duplicates[, c("ligand", "receptor")])
