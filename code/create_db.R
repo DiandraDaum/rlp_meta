@@ -134,7 +134,8 @@ results_ligand <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
 results_top_count <- results_ligand %>% 
   group_by(ligand) %>% 
   slice_max(count, n = 1) %>% 
-  ungroup()
+  ungroup()%>% 
+  arrange(desc(count)) 
 
 # Write the results to a new output file
 write_xlsx(results_top_count, "/Users/diandra/rlp_meta/results/alldb_top_count.xlsx")
