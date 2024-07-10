@@ -81,6 +81,7 @@ for (file in files) {
 
 # Remove "-" and "???" and "xxx" values, and values that start with "?"
 results_filtered <- results %>% 
+  filter(ligand != receptor) %>%
   filter(!(ligand == "-" | ligand == "???" | ligand == "xxx" | ligand == "????" | 
              receptor == "-" | receptor == "???" | receptor == "????" | receptor == "xxx"))
 if (nrow(results)!= nrow(results_filtered)) {
@@ -88,14 +89,10 @@ if (nrow(results)!= nrow(results_filtered)) {
 }
 results <- results_filtered
 
-# Identify and print the redundant pairs that were removed
-# Identify and print the redundant pairs that were removed
+# Identify and print the redundant pairs (only forward) that were removed
 n_before_distinct <- nrow(results)
 results_sorted <- results %>% 
   mutate(ligand = toupper(ligand), receptor = toupper(receptor)) #%>% 
-  #mutate(temp = pmin(ligand, receptor), temp2 = pmax(ligand, receptor)) %>% 
-  #mutate(ligand = temp, receptor = temp2) %>% 
-  #select(-temp, -temp2)
 
 duplicates <- results_sorted[duplicated(results_sorted[, c("ligand", "receptor")]) | duplicated(results_sorted[, c("receptor", "ligand")], fromLast = TRUE), ]
 if (nrow(duplicates) > 0) {
@@ -105,9 +102,11 @@ if (nrow(duplicates) > 0) {
 
 # Remove duplicates and keep one copy, then aggregate file names
 results_distinct <- results_sorted %>% 
-  group_by(ligand, receptor) %>% 
+  mutate(interaction = paste(ligand, receptor, sep = "_")) %>% 
+  group_by(interaction, ligand, receptor) %>% 
   summarise(file = paste(unique(file), collapse = "; "), 
-            count = n())
+            count = n()) %>% 
+  select(interaction, everything())
 
 n_after_distinct <- nrow(results_distinct)
 
@@ -117,14 +116,6 @@ if (n_before_distinct!= n_after_distinct) {
 
 # Rename the receptor column to receptor(s)
 names(results_distinct)[names(results_distinct) == "receptor"] <- "receptor(s)"
-
-# Add a new column called "interaction"
-#results <- results %>% 
-  #mutate(interaction = paste(ligand, `receptor(s)`, sep = "_"))
-
-# Move the "interaction" column to the first position
-#results <- results %>% 
-  #select(interaction, everything())
 
 # Write the results to the output file
 write.csv(results_distinct, output_file_path, row.names = FALSE)
