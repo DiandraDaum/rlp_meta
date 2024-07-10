@@ -14,13 +14,14 @@ library(stringr)
 library(writexl)
 
 # Set the folder path and output file path
-#folder_path <- "/Users/diandra/rlp_meta/data/input_files_for_db"
-folder_path <- "/Users/diandra/rlp_meta/data/new_files"
+folder_path <- "/Users/diandra/rlp_meta/data/input_files_for_db"
+#folder_path <- "/Users/diandra/rlp_meta/data/Cellchat/try"
 
-#output_file_path <- "/Users/diandra/rlp_meta/results/alldbfull.csv" #csv output
-#output_file_path2 <- "/Users/diandra/rlp_meta/results/alldbfull.xlsx" #xlsx output
-output_file_path <- "/Users/diandra/rlp_meta/data/new_files/res1.csv" #csv output
-output_file_path2 <- "/Users/diandra/rlp_meta/data/new_files/res1.xlsx" #xlsx output
+output_file_path <- "/Users/diandra/rlp_meta/results/alldbfull.csv" #csv output
+output_file_path2 <- "/Users/diandra/rlp_meta/results/alldbfull.xlsx" #xlsx output
+#output_file_path <- "/Users/diandra/rlp_meta/data/Cellchat/try1.csv" #csv output
+#output_file_path2 <- "/Users/diandra/rlp_meta/data/Cellchat/try1.xlsx" #xlsx output
+
 
 # Define the possible column names for ligand and receptor
 ligand_cols <- c("LIGAND", "ligand", "Ligand (Symbol)", "From", "Ligand.ApprovedSymbol", "ligand.symbol", "Ligand",  "AliasA", "Ligand gene symbol", "ligand_gene_symbol", "source_genesymbol", "from", "Gene1_Symbol")
@@ -61,7 +62,8 @@ for (file in files) {
     colnames(pairs) <- c("ligand", "receptor")
     
     # Check for swapped values and swap them if necessary
-    swapped_rows <- str_detect(pairs$ligand, "receptor") | str_detect(pairs$receptor, "ligand")
+    #swapped_rows <- str_detect(pairs$ligand, "receptor") | str_detect(pairs$receptor, "ligand")
+    swapped_rows <- str_detect(pairs$ligand, "receptor") | str_detect(pairs$receptor, "ligand") | str_detect(pairs$ligand, "Receptor") | str_detect(pairs$receptor, "Ligand") | str_detect(pairs$ligand, "RECEPTOR") | str_detect(pairs$receptor, "LIGAND")
     #swapped_rows <- str_detect(pairs$ligand, "\\b(receptor|ligand)\\b") | str_detect(pairs$receptor, "\\b(receptor|ligand)\\b")
     swapped_rows[is.na(swapped_rows)] <- FALSE  # Replace NA with FALSE
     if (any(swapped_rows)) {
@@ -90,10 +92,10 @@ results <- results_filtered
 # Identify and print the redundant pairs that were removed
 n_before_distinct <- nrow(results)
 results_sorted <- results %>% 
-  mutate(ligand = toupper(ligand), receptor = toupper(receptor)) %>% 
-  mutate(temp = pmin(ligand, receptor), temp2 = pmax(ligand, receptor)) %>% 
-  mutate(ligand = temp, receptor = temp2) %>% 
-  select(-temp, -temp2)
+  mutate(ligand = toupper(ligand), receptor = toupper(receptor)) #%>% 
+  #mutate(temp = pmin(ligand, receptor), temp2 = pmax(ligand, receptor)) %>% 
+  #mutate(ligand = temp, receptor = temp2) %>% 
+  #select(-temp, -temp2)
 
 duplicates <- results_sorted[duplicated(results_sorted[, c("ligand", "receptor")]) | duplicated(results_sorted[, c("receptor", "ligand")], fromLast = TRUE), ]
 if (nrow(duplicates) > 0) {
@@ -115,6 +117,14 @@ if (n_before_distinct!= n_after_distinct) {
 
 # Rename the receptor column to receptor(s)
 names(results_distinct)[names(results_distinct) == "receptor"] <- "receptor(s)"
+
+# Add a new column called "interaction"
+#results <- results %>% 
+  #mutate(interaction = paste(ligand, `receptor(s)`, sep = "_"))
+
+# Move the "interaction" column to the first position
+#results <- results %>% 
+  #select(interaction, everything())
 
 # Write the results to the output file
 write.csv(results_distinct, output_file_path, row.names = FALSE)
