@@ -28,3 +28,17 @@ output_file <- file.path(new_dir, paste0(file_name, "_new.tsv"))
 write_tsv(df, output_file)
 
 
+df <- read_tsv("/Users/diandra/rlp_meta/data/new_files/Human-2023-Zhao-LR-pairs_new.tsv")
+
+df_removed <- df %>% 
+  filter(interaction_type!= "ligand-receptor")
+
+df_filtered <- df %>% 
+  filter(interaction_type == "ligand-receptor")
+
+# Print the removed lines
+print("Removed lines:")
+print(df_removed)
+
+write_tsv(df_filtered, "/Users/diandra/rlp_meta/data/new_files/Human-2023-Zhao-LR-pairs_new.tsv" )
+
