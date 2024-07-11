@@ -92,7 +92,8 @@ results <- results_filtered
 # Identify and print the redundant pairs (only forward) that were removed
 n_before_distinct <- nrow(results)
 results_sorted <- results %>% 
-  mutate(ligand = toupper(ligand), receptor = toupper(receptor)) 
+  mutate(ligand = toupper(ligand), receptor = toupper(receptor)) %>% 
+  filter(!str_detect(ligand, "COMPLEX") | str_detect(receptor, "COMPLEX"))
 
 duplicates <- results_sorted[duplicated(results_sorted[, c("ligand", "receptor")]) | duplicated(results_sorted[, c("receptor", "ligand")], fromLast = TRUE), ]
 if (nrow(duplicates) > 0) {
@@ -124,6 +125,7 @@ write_xlsx(results_distinct, output_file_path2)
 
 
 #keep best interactions
+#best receptor for each ligand
 library(dplyr)
 library(readxl)
 
@@ -138,5 +140,24 @@ results_top_count <- results_ligand %>%
   arrange(desc(count)) 
 
 # Write the results to a new output file
-write_xlsx(results_top_count, "/Users/diandra/rlp_meta/results/alldb_top_count.xlsx")
+write_xlsx(results_top_count, "/Users/diandra/rlp_meta/results/alldb_top_count_ligand.xlsx")
+
+
+#keep best interactions
+#best receptor for each ligand
+library(dplyr)
+library(readxl)
+
+# Read the output file
+results_receptor <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
+
+# Group by ligand and keep the interaction with the highest count
+results_top_count <- results_receptor %>% 
+  group_by('receptor(s)') %>% 
+  slice_max(count, n = 1) %>% 
+  ungroup()%>% 
+  arrange(desc(count)) 
+
+# Write the results to a new output file
+write_xlsx(results_top_count, "/Users/diandra/rlp_meta/results/alldb_top_count_receptor.xlsx")
 
