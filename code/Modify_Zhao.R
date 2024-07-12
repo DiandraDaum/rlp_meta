@@ -42,3 +42,41 @@ print(df_removed)
 
 write_tsv(df_filtered, "/Users/diandra/rlp_meta/data/new_files/Human-2023-Zhao-LR-pairs_new.tsv" )
 
+
+#-------------------------------------------------------------------------------
+#check genesymbols with progress bar
+# Load the necessary libraries
+library(org.Hs.eg.db)
+library(progress)
+library(readr)
+library(tidyr)
+
+# Load your data (replace 'your_data.csv' with your actual file name)
+data <- read_tsv("/Users/diandra/rlp_meta/data/new_files/Human-2023-Zhao-LR-pairs_new.tsv")
+
+# Create the ligand_valid and receptor_valid columns
+data$ligand_valid <- FALSE
+data$receptor_valid <- FALSE
+
+# Create a progress bar
+pb <- progress_bar$new(format = "[:bar] :percent eta: :eta", total = nrow(data))
+
+# Vectorize the is_gene_symbol function
+for (i in 1:nrow(data)) {
+  data$ligand_valid[i] <- data$ligand[i] %in% keys(org.Hs.eg.db, "SYMBOL")
+  data$receptor_valid[i] <- data$receptor[i] %in% keys(org.Hs.eg.db, "SYMBOL")
+  pb$tick()
+}
+
+# Now you can use the data with the new columns
+# For example, you can filter the data to only include rows where both ligand and receptor are valid
+valid_data <- data[data$ligand_valid & data$receptor_valid, ]
+
+# Remove the rows that do not have valid gene symbols
+data <- data[data$ligand_valid & data$receptor_valid, ]
+
+# Remove the validation columns
+data <- data[,!(names(data) %in% c("ligand_valid", "receptor_valid"))]
+
+# Save the output to the new file
+write_tsv(data, "/Users/diandra/rlp_meta/data/new_files/Human-2023-Zhao-LR-pairs_new.tsv" )
