@@ -124,6 +124,46 @@ write_xlsx(results_distinct, output_file_path2)
 
 
 
+
+#check genesymbols with progress bar
+# Load the necessary libraries
+library(readxl)
+library(org.Hs.eg.db)
+library(writexl)
+library(progress)
+
+# Load your data (replace 'your_data.csv' with your actual file name)
+data <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
+
+# Create the ligand_valid and receptor_valid columns
+data$ligand_valid <- FALSE
+data$receptor_valid <- FALSE
+
+# Create a progress bar
+pb <- progress_bar$new(format = "[:bar] :percent eta: :eta", total = nrow(data))
+
+# Vectorize the is_gene_symbol function
+for (i in 1:nrow(data)) {
+  data$ligand_valid[i] <- data$ligand[i] %in% keys(org.Hs.eg.db, "SYMBOL")
+  data$receptor_valid[i] <- data$`receptor(s)`[i] %in% keys(org.Hs.eg.db, "SYMBOL")
+  pb$tick()
+}
+
+# Now you can use the data with the new columns
+# For example, you can filter the data to only include rows where both ligand and receptor are valid
+valid_data <- data[data$ligand_valid & data$receptor_valid, ]
+
+# Remove the rows that do not have valid gene symbols
+data <- data[data$ligand_valid & data$receptor_valid, ]
+
+# Remove the validation columns
+data <- data[,!(names(data) %in% c("ligand_valid", "receptor_valid"))]
+
+# Save the output to a new xlsx file
+write_xlsx(data, "/Users/diandra/rlp_meta/results/alldbfull.xlsx")
+
+
+#-------------------------------------------------------------------------------
 #keep best interactions
 #best receptor for each ligand
 library(dplyr)
@@ -143,6 +183,7 @@ results_top_count <- results_ligand %>%
 write_xlsx(results_top_count, "/Users/diandra/rlp_meta/results/alldb_top_count_ligand.xlsx")
 
 
+#-------------------------------------------------------------------------------
 #keep best interactions
 #best receptor for each ligand
 library(dplyr)
