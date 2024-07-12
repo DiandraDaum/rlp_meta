@@ -29,3 +29,18 @@ data$receptor<- data$partner_b
 write.csv(data, "/Users/diandra/rlp_meta/data/new_files/interaction_input_Vento_Cellphonedbv5_new.csv", row.names = FALSE)
 
 
+#keep only directionality: ligand-receptor
+file <- read.csv("/Users/diandra/rlp_meta/data/new_files/interaction_input_Vento_Cellphonedbv5_new.csv", stringsAsFactors = FALSE)
+                 
+# Remove rows where directionality is not "Ligand-Receptor"
+file_subset <- subset(file, directionality == "Ligand-Receptor")  
+
+# Check if protein_name_a is empty, and if so, set ligand to NA
+file_subset$ligand <- ifelse(file_subset$protein_name_a == "", NA, file_subset$ligand)
+
+#re-write filtered output file
+write.csv(file_subset, "/Users/diandra/rlp_meta/data/new_files/interaction_input_Vento_Cellphonedbv5_new.csv", row.names = FALSE)           
+                 
+                 
+                 
+                 
