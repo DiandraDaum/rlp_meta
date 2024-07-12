@@ -73,3 +73,22 @@ data1[, c("ligand", "receptor")] <- t(apply(data1, 1, function(x) {
 
 write_xlsx(data1, "/Users/diandra/rlp_meta/data/new_files/Human-2019-Ximerakis-BaderLab-2017_new.xlsx")
 
+#-------------------------------------------------------------------------------
+#REMOVE DUPLICATES!
+# Load the xlsx file
+library(readxl)
+library(writexl)
+df <- read_xlsx("/Users/diandra/rlp_meta/data/new_files/Human-2019-Ximerakis-BaderLab-2017_new.xlsx")
+
+# Check for duplicates in ligand-receptor pairs
+df_duplicates <- df[duplicated(paste(df$ligand, df$receptor)), ]
+df_unique <- df[!duplicated(paste(df$ligand, df$receptor)), ]
+
+# Print the removed rows
+print("Removed rows:")
+print(df_duplicates)
+
+# Save the unique rows to a new file
+write_xlsx(df_unique, "/Users/diandra/rlp_meta/data/new_files/Human-2019-Ximerakis-BaderLab-2017_new.xlsx")
+
+
