@@ -69,3 +69,54 @@ data$receptor[is.na(data$receptor) & data$receptor_original == "Q6A1A2"] <- "PDP
 write.table(data, "/Users/diandra/rlp_meta/data/new_files/OmniPathPPIs_new.tsv", sep = "\t", quote = FALSE, row.names = FALSE)
 
 
+
+#KEEP ONLY LRP
+# Load the necessary libraries
+library(readr)
+library(dplyr)
+
+# Load the first tsv file
+interactions <- read_tsv("/Users/diandra/rlp_meta/data/new_files/OmniPathPPIs_new.tsv")
+
+# Load the second tsv file
+gene_info <- read_tsv("/Users/diandra/rlp_meta/data/LewisLabUCSD/Human-2021-OmniPath-Turei/OmniPathInterCellProts.tsv")
+
+# Merge the two datasets to add ligand_category and receptor_category
+interactions_with_categories <- interactions %>%
+  left_join(gene_info %>% filter(category == "ligand") %>% group_by(uniprot) %>% summarise(ligand_category = "ligand"), by = c("ligand_original" = "uniprot")) %>%
+  left_join(gene_info %>% filter(category == "receptor") %>% group_by(uniprot) %>% summarise(receptor_category = "receptor"), by = c("receptor_original" = "uniprot")) %>%
+  mutate(
+    ligand_original = ifelse(ligand_category == "receptor" & receptor_category == "ligand", receptor_original, ligand_original),
+    receptor_original = ifelse(ligand_category == "receptor" & receptor_category == "ligand", ligand_original, receptor_original)
+  ) %>%
+  filter((ligand_category == "ligand" & receptor_category == "receptor") | (ligand_category == "receptor" & receptor_category == "ligand"))
+# Write the modified data back to the same file
+write.table(interactions_with_categories, "/Users/diandra/rlp_meta/data/new_files/OmniPathPPIs_new.tsv", sep = "\t", quote = FALSE, row.names = FALSE)
+
+
+#IGNORE
+#BASED ON GENESYMBOL: MORE NA
+# Load the necessary libraries
+library(readr)
+library(dplyr)
+
+# Load the first tsv file
+interactions <- read_tsv("/Users/diandra/rlp_meta/data/input_files_for_db/OmniPathPPIs_new.tsv")
+
+# Load the second tsv file
+gene_info <- read_tsv("/Users/diandra/rlp_meta/data/LewisLabUCSD/Human-2021-OmniPath-Turei/OmniPathInterCellProts.tsv")
+
+# Merge the two datasets to add ligand_category and receptor_category
+interactions_with_categories <- interactions %>%
+  left_join(gene_info %>% filter(category == "ligand") %>% group_by(genesymbol) %>% summarise(ligand_category = "ligand"), by = c("ligand" = "genesymbol")) %>%
+  left_join(gene_info %>% filter(category == "receptor") %>% group_by(genesymbol) %>% summarise(receptor_category = "receptor"), by = c("receptor" = "genesymbol")) %>%
+  mutate(
+    ligand = ifelse(ligand_category == "receptor" & receptor_category == "ligand", receptor, ligand),
+    receptor = ifelse(ligand_category == "receptor" & receptor_category == "ligand", ligand, receptor)
+  ) %>%
+  filter((ligand_category == "ligand" & receptor_category == "receptor") | (ligand_category == "receptor" & receptor_category == "ligand"))
+
+# Write the modified data back to the same file
+write.table(interactions_with_categories, "/Users/diandra/rlp_meta/data/new_files/OmniPathPPIs_new.tsv", sep = "\t", quote = FALSE, row.names = FALSE)
+
+
