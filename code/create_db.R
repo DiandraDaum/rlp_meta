@@ -124,7 +124,7 @@ write_xlsx(results_distinct, output_file_path2)
 
 
 
-
+#-------------------------------------------------------------------------------
 #check genesymbols with progress bar
 # Load the necessary libraries
 library(readxl)
@@ -201,4 +201,3 @@ results_top_count <- results_receptor %>%
 
 # Write the results to a new output file
 write_xlsx(results_top_count, "/Users/diandra/rlp_meta/results/alldb_top_count_receptor.xlsx")
-
