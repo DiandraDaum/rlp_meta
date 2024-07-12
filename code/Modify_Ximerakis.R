@@ -32,7 +32,11 @@ data1$receptor <- NA
 assign_ligand_receptor <- function(alias_A, alias_B, alias_A_type, alias_B_type) {
   if (alias_A_type == alias_B_type) {
     # If both have the same type, copy alias_A to ligand and alias_B to receptor
-    return(c(alias_A, alias_B))
+    if (alias_A_type == "ECM") {
+      return(c("-", "-"))
+    } else {
+      return(c(alias_A, alias_B))
+    }
   } else if (grepl("Receptor", alias_A_type) && !grepl("Receptor", alias_B_type)) {
     return(c(alias_B, alias_A))
   } else if (grepl("Receptor", alias_B_type) && !grepl("Receptor", alias_A_type)) {
