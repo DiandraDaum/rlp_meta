@@ -79,7 +79,7 @@ for (file in files) {
   }
 }
 
-# Remove "-" and "???" and "xxx" values, and values that start with "?"
+# Remove "-" and "???" and "xxx" values, and values that start with "?", check :?
 results_filtered <- results %>% 
   filter(ligand != receptor) %>%
   filter(!(ligand == "-" | ligand == "???" | ligand == "xxx" | ligand == "????" | 
@@ -93,7 +93,7 @@ results <- results_filtered
 n_before_distinct <- nrow(results)
 results_sorted <- results %>% 
   mutate(ligand = toupper(ligand), receptor = toupper(receptor)) %>% 
-  filter(!str_detect(ligand, "COMPLEX") | str_detect(receptor, "COMPLEX"))
+  filter(!(str_detect(ligand, "COMPLEX") | str_detect(receptor, "COMPLEX")))
 
 duplicates <- results_sorted[duplicated(results_sorted[, c("ligand", "receptor")]) | duplicated(results_sorted[, c("receptor", "ligand")], fromLast = TRUE), ]
 if (nrow(duplicates) > 0) {
