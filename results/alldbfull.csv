@@ -3801,6 +3801,31 @@
 "BTN1A1_NEGR1","BTN1A1","NEGR1","Human-2022-Dimitrov-LR-pairs.csv",1
 "BTN1A1_TARM1","BTN1A1","TARM1","Human-2022-Dimitrov-LR-pairs.csv",1
 "BY55_TNFRSF14","BY55","TNFRSF14","LRdb_122019_SingleCellSignalIR.xlsx",1
+"C11ORF45_APP","C11ORF45","APP","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C12ORF10_AGTRAP","C12ORF10","AGTRAP","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C12ORF10_CMTM5","C12ORF10","CMTM5","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C12ORF10_HSP90AA1","C12ORF10","HSP90AA1","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C12ORF10_PKM","C12ORF10","PKM","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C12ORF10_RPSA","C12ORF10","RPSA","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C12ORF49_HNF4A","C12ORF49","HNF4A","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C14ORF93_ADAM22","C14ORF93","ADAM22","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C14ORF93_APP","C14ORF93","APP","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C19ORF10_BSG","C19ORF10","BSG","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C19ORF10_CALR","C19ORF10","CALR","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C19ORF10_CD44","C19ORF10","CD44","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C19ORF10_HSP90AA1","C19ORF10","HSP90AA1","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C19ORF10_HSP90B1","C19ORF10","HSP90B1","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C19ORF10_ITGA2","C19ORF10","ITGA2","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C19ORF10_ITGB1","C19ORF10","ITGB1","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C19ORF10_ITGB4","C19ORF10","ITGB4","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C19ORF10_PKM","C19ORF10","PKM","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C19ORF10_TACSTD2","C19ORF10","TACSTD2","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C19ORF10_TFRC","C19ORF10","TFRC","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C1ORF112_PLSCR4","C1ORF112","PLSCR4","Human-2015-Ramilowski-LR-pairs.xlsx; Human-2019-Wang-LR-pairs.csv; LRdb_122019_SingleCellSignalIR.xlsx",3
+"C1ORF194_PLSCR4","C1ORF194","PLSCR4","Human-2015-Ramilowski-LR-pairs.xlsx; Human-2019-Wang-LR-pairs.csv; LRdb_122019_SingleCellSignalIR.xlsx",3
+"C1ORF200_LY6G6C","C1ORF200","LY6G6C","Human-2019-Wang-LR-pairs.csv",1
+"C1ORF200_SLC16A4","C1ORF200","SLC16A4","Human-2019-Wang-LR-pairs.csv",1
+"C1ORF56_THRA","C1ORF56","THRA","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
 "C1QA_ADIPOQ","C1QA","ADIPOQ","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
 "C1QA_APCS","C1QA","APCS","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
 "C1QA_CD33","C1QA","CD33","Human-2020-Hou-LR-pairs.xlsx; Human-2022-Dimitrov-LR-pairs.csv; ICELLNETdb_v2_new.xlsx",3
@@ -3910,12 +3935,18 @@
 "C1QTNF9_OR5I1","C1QTNF9","OR5I1","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
 "C1S_FN1","C1S","FN1","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
 "C1S_HNF4A","C1S","HNF4A","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C22ORF46_APP","C22ORF46","APP","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C22ORF46_ESR1","C22ORF46","ESR1","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
 "C2CD2_ESR2","C2CD2","ESR2","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
 "C2CD2_PPARA","C2CD2","PPARA","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C2ORF69_OR5I1","C2ORF69","OR5I1","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C2ORF69_SORT1","C2ORF69","SORT1","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
 "C2_CD55","C2","CD55","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
 "C2_CR1","C2","CR1","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
 "C2_FCN1","C2","FCN1","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
 "C2_HNF4A","C2","HNF4A","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C3ORF58_CHRNA9","C3ORF58","CHRNA9","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C3ORF58_HTR3C","C3ORF58","HTR3C","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
 "C3_ACKR3","C3","ACKR3","NicheNet-LR-pairs.csv",1
 "C3_ADRA2A","C3","ADRA2A","Human-2020-Shao-LR-pairs.txt; Human-2022-Dimitrov-LR-pairs.csv; LRdb_122019_SingleCellSignalIR.xlsx",3
 "C3_AGTR2","C3","AGTR2","NicheNet-LR-pairs.csv",1
@@ -4050,6 +4081,10 @@
 "C4B_CR1","C4B","CR1","Human-2015-Ramilowski-LR-pairs.xlsx; Human-2019-Wang-LR-pairs.csv; Human-2019-Ximerakis-BaderLab-2017_new2.xlsx; Human-2020-Hou-LR-pairs.xlsx; Human-2020-Shao-LR-pairs.txt; Human-2022-Dimitrov-LR-pairs.csv; LRdb_122019_SingleCellSignalIR.xlsx; OmniPathPPIs_new.tsv",8
 "C4B_FCN1","C4B","FCN1","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
 "C4B_HNF4A","C4B","HNF4A","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C4ORF26_RUNX1","C4ORF26","RUNX1","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C4ORF26_VEGFA","C4ORF26","VEGFA","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C4ORF48_TGFB1","C4ORF48","TGFB1","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C5ORF55_TRAF2","C5ORF55","TRAF2","Human-2019-Wang-LR-pairs.csv",1
 "C5_ACKR3","C5","ACKR3","NicheNet-LR-pairs.csv",1
 "C5_ADORA1","C5","ADORA1","NicheNet-LR-pairs.csv",1
 "C5_ADORA3","C5","ADORA3","NicheNet-LR-pairs.csv",1
@@ -4171,6 +4206,9 @@
 "C5_TAS2R60","C5","TAS2R60","NicheNet-LR-pairs.csv",1
 "C5_TAS2R7","C5","TAS2R7","NicheNet-LR-pairs.csv",1
 "C5_VTN","C5","VTN","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx; NicheNet-LR-pairs.csv",2
+"C6ORF120_CD55","C6ORF120","CD55","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C6ORF120_EGFR","C6ORF120","EGFR","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"C6ORF15_DDR1","C6ORF15","DDR1","Human-2015-Ramilowski-LR-pairs.xlsx; Human-2019-Wang-LR-pairs.csv; LRdb_122019_SingleCellSignalIR.xlsx; OmniPathPPIs_new.tsv",4
 "C6_CLU","C6","CLU","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
 "C6_F2","C6","F2","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
 "C6_FN1","C6","FN1","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
@@ -4939,6 +4977,7 @@
 "CCL17_VCAM1","CCL17","VCAM1","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx; NicheNet-LR-pairs.csv",2
 "CCL17_XCR1","CCL17","XCR1","OmniPathPPIs_new.tsv",1
 "CCL18_ACKR1","CCL18","ACKR1","CellChatDB.humanv2-2023-Jin-LR-pairs_new.xlsx; Human-2022-Dimitrov-LR-pairs.csv; OmniPathPPIs_new.tsv",3
+"CCL18_C14ORF1","CCL18","C14ORF1","Human-2015-Ramilowski-LR-pairs.xlsx; Human-2019-Wang-LR-pairs.csv; LRdb_122019_SingleCellSignalIR.xlsx",3
 "CCL18_C5AR1","CCL18","C5AR1","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
 "CCL18_CCR1","CCL18","CCR1","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx; Human-2020-Shao-LR-pairs.txt; Human-2022-Dimitrov-LR-pairs.csv; OmniPathPPIs_new.tsv",4
 "CCL18_CCR10","CCL18","CCR10","OmniPathPPIs_new.tsv",1
@@ -11502,6 +11541,7 @@
 "CXCL9_TAS2R7","CXCL9","TAS2R7","NicheNet-LR-pairs.csv",1
 "CXCL9_XCR1","CXCL9","XCR1","OmniPathPPIs_new.tsv",1
 "CXCR4_CD4","CXCR4","CD4","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
+"CXORF36_HNF4A","CXORF36","HNF4A","Human-2019-Ximerakis-BaderLab-2017_new2.xlsx",1
 "CYP11A1_NR1H4","CYP11A1","NR1H4","CellChatDB.humanv2-2023-Jin-LR-pairs_new.xlsx",1
 "CYP11A1_PAQR3","CYP11A1","PAQR3","OmniPathPPIs_new.tsv",1
 "CYP11B1_NR3C1","CYP11B1","NR3C1","CellChatDB.humanv2-2023-Jin-LR-pairs_new.xlsx",1
