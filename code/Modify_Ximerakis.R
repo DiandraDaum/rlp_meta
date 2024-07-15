@@ -31,11 +31,10 @@ data1$receptor <- NA
 # Define a function to determine ligand/receptor assignment
 assign_ligand_receptor <- function(alias_A, alias_B, alias_A_type, alias_B_type) {
   if (alias_A_type == alias_B_type) {
-    # If both have the same type, copy alias_A to ligand and alias_B to receptor
-    if (alias_A_type == "ECM") {
+    if (alias_A_type == "ECM" || alias_B_type == "ECM") {
       return(c("-", "-"))
     } else {
-      return(c(alias_A, alias_B))
+      return(c("-", "-"))
     }
   } else if (grepl("Receptor", alias_A_type) && !grepl("Receptor", alias_B_type)) {
     return(c(alias_B, alias_A))
@@ -81,14 +80,18 @@ library(writexl)
 df <- read_xlsx("/Users/diandra/rlp_meta/data/new_files/Human-2019-Ximerakis-BaderLab-2017_new.xlsx")
 
 # Check for duplicates in ligand-receptor pairs
+#df_duplicates <- df[duplicated(paste(df$AliasA, df$AliasB)), ]
+#df_unique <- df[!duplicated(paste(df$AliasA, df$AliasB)), ]
+#get 43,408 entries --> 41,755 entries in alldbfull
 df_duplicates <- df[duplicated(paste(df$ligand, df$receptor)), ]
 df_unique <- df[!duplicated(paste(df$ligand, df$receptor)), ]
+#get  22,628 entries (considers duplicates all the -- pairs) --> 41,755 entries
 
 # Print the removed rows
 print("Removed rows:")
 print(df_duplicates)
 
 # Save the unique rows to a new file
-write_xlsx(df_unique, "/Users/diandra/rlp_meta/data/new_files/Human-2019-Ximerakis-BaderLab-2017_new.xlsx")
+write_xlsx(df_unique, "/Users/diandra/rlp_meta/data/new_files/Human-2019-Ximerakis-BaderLab-2017_new2.xlsx")
 
 
