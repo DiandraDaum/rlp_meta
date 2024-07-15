@@ -72,6 +72,12 @@ for (i in 1:nrow(data)) {
 # For example, you can filter the data to only include rows where both ligand and receptor are valid
 valid_data <- data[data$ligand_valid & data$receptor_valid, ]
 
+# Store the removed rows in a separate data frame
+removed_data <- data[!(data$ligand_valid & data$receptor_valid), ]
+
+# Print the removed rows
+print(removed_data)
+
 # Remove the rows that do not have valid gene symbols
 data <- data[data$ligand_valid & data$receptor_valid, ]
 
