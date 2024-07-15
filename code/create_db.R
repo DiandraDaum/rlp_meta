@@ -93,8 +93,8 @@ results <- results_filtered
 n_before_distinct <- nrow(results)
 results_sorted <- results %>% 
   mutate(ligand = toupper(ligand), receptor = toupper(receptor)) %>% 
-  filter(!(str_detect(ligand, "COMPLEX") | str_detect(receptor, "COMPLEX")))%>% 
-  filter(!(str_detect(ligand, "ORF") | str_detect(receptor, "ORF")))
+  filter(!(str_detect(ligand, "COMPLEX") | str_detect(receptor, "COMPLEX")))#%>% 
+  #filter(!(str_detect(ligand, "ORF") | str_detect(receptor, "ORF")))
 
 duplicates <- results_sorted[duplicated(results_sorted[, c("ligand", "receptor")]) | duplicated(results_sorted[, c("receptor", "ligand")], fromLast = TRUE), ]
 if (nrow(duplicates) > 0) {
