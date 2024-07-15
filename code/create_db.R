@@ -93,7 +93,8 @@ results <- results_filtered
 n_before_distinct <- nrow(results)
 results_sorted <- results %>% 
   mutate(ligand = toupper(ligand), receptor = toupper(receptor)) %>% 
-  filter(!(str_detect(ligand, "COMPLEX") | str_detect(receptor, "COMPLEX")))
+  filter(!(str_detect(ligand, "COMPLEX") | str_detect(receptor, "COMPLEX")))%>% 
+  filter(!(str_detect(ligand, "ORF") | str_detect(receptor, "ORF")))
 
 duplicates <- results_sorted[duplicated(results_sorted[, c("ligand", "receptor")]) | duplicated(results_sorted[, c("receptor", "ligand")], fromLast = TRUE), ]
 if (nrow(duplicates) > 0) {
@@ -199,13 +200,13 @@ library(writexl)
 # Read the output file
 results_receptor <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
 
-# Group by ligand and keep the interaction with the highest count
-results_top_count <- results_receptor %>% 
-  group_by('receptor(s)') %>% 
+# Group by receptor and keep the interaction with the highest count
+results_top_count2 <- results_receptor %>% 
+  group_by(`receptor(s)`) %>% 
   slice_max(count, n = 1) %>% 
   ungroup()%>% 
   arrange(desc(count)) 
 
 # Write the results to a new output file
-write_xlsx(results_top_count, "/Users/diandra/rlp_meta/results/alldb_top_count_receptor.xlsx")
+write_xlsx(results_top_count2, "/Users/diandra/rlp_meta/results/alldb_top_count_receptor.xlsx")
 
