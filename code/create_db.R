@@ -189,6 +189,29 @@ results_top_count <- results_ligand %>%
 # Write the results to a new output file
 write_xlsx(results_top_count, "/Users/diandra/rlp_meta/results/alldb_top_count_ligand.xlsx")
 
+#at least 2 counts:
+library(dplyr)
+library(readxl)
+library(writexl)
+
+# Read the output file
+results_ligand <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
+
+# Filter ligand-receptor pairs with at least 2 counts
+results_at_least_2_counts <- results_ligand %>% 
+  group_by(ligand, count) %>% 
+  filter(count >= 2) %>% 
+  ungroup()
+
+# Group by ligand and keep the interaction with the highest count
+results_top_count <- results_at_least_2_counts %>% 
+  group_by(ligand) %>% 
+  slice_max(count, n = 1) %>% 
+  ungroup() %>% 
+  arrange(desc(count))
+
+# Write the results to a new output file
+write_xlsx(results_top_count, "/Users/diandra/rlp_meta/results/alldb_at_least_2_counts_ligand.xlsx")
 
 #TOP RECEPTORS-------------------------------------------------------------------------------
 #keep best interactions
@@ -201,12 +224,12 @@ library(writexl)
 results_receptor <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
 
 # Group by receptor and keep the interaction with the highest count
-results_top_count2 <- results_receptor %>% 
+results_top_countr <- results_receptor %>% 
   group_by(`receptor(s)`) %>% 
   slice_max(count, n = 1) %>% 
   ungroup()%>% 
   arrange(desc(count)) 
 
 # Write the results to a new output file
-write_xlsx(results_top_count2, "/Users/diandra/rlp_meta/results/alldb_top_count_receptor.xlsx")
+write_xlsx(results_top_countr, "/Users/diandra/rlp_meta/results/alldb_top_count_receptor.xlsx")
 
