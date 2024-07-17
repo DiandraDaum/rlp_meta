@@ -72,7 +72,7 @@ data1[, c("ligand", "receptor")] <- t(apply(data1, 1, function(x) {
 
 write_xlsx(data1, "/Users/diandra/rlp_meta/data/new_files/Human-2019-Ximerakis-BaderLab-2017_new.xlsx")
 
-#-------------------------------------------------------------------------------
+#DUPLICATES-------------------------------------------------------------------------------
 #REMOVE DUPLICATES!
 # Load the xlsx file
 library(readxl)
@@ -93,5 +93,15 @@ print(df_duplicates)
 
 # Save the unique rows to a new file
 write_xlsx(df_unique, "/Users/diandra/rlp_meta/data/new_files/Human-2019-Ximerakis-BaderLab-2017_new2.xlsx")
+
+#ONLY LR -----------------------------------------------------------------------
+library(readxl)
+library(writexl)
+df <- read_xlsx("/Users/diandra/rlp_meta/data/new_files/Human-2019-Ximerakis-BaderLab-2017_new2.xlsx")
+
+df <- df[(df$alias_A_type == "Ligand" & df$alias_B_type == "Receptor") | 
+           (df$alias_A_type == "Receptor" & df$alias_B_type == "Ligand"), ]
+
+write_xlsx(df, "/Users/diandra/rlp_meta/data/new_files/Human-2019-Ximerakis-BaderLab-2017_new2.xlsx")
 
 
