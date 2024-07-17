@@ -93,7 +93,9 @@ results <- results_filtered
 n_before_distinct <- nrow(results)
 results_sorted <- results %>% 
   mutate(ligand = toupper(ligand), receptor = toupper(receptor)) %>% 
-  filter(!(str_detect(ligand, "COMPLEX") | str_detect(receptor, "COMPLEX")))#%>% 
+  filter(!(str_detect(ligand, "COMPLEX") | str_detect(receptor, "COMPLEX")))%>%
+  filter(!(str_detect(ligand, ";") | str_detect(receptor, ";")))%>%
+  filter(!(str_detect(ligand, "_") | str_detect(receptor, "_")))
   #filter(!(str_detect(ligand, "ORF") | str_detect(receptor, "ORF")))
 
 duplicates <- results_sorted[duplicated(results_sorted[, c("ligand", "receptor")]) | duplicated(results_sorted[, c("receptor", "ligand")], fromLast = TRUE), ]
@@ -121,7 +123,7 @@ names(results_distinct)[names(results_distinct) == "receptor"] <- "receptor(s)"
 # Write the results to the output file
 write.csv(results_distinct, output_file_path, row.names = FALSE)
 write_xlsx(results_distinct, output_file_path2)
-
+#32,866 entries
 
 
 
@@ -188,6 +190,7 @@ results_top_count <- results_ligand %>%
 
 # Write the results to a new output file
 write_xlsx(results_top_count, "/Users/diandra/rlp_meta/results/alldb_top_count_ligand.xlsx")
+#5,971 entries
 
 #at least 2 counts:
 library(dplyr)
@@ -212,6 +215,33 @@ results_top_count <- results_at_least_2_counts %>%
 
 # Write the results to a new output file
 write_xlsx(results_top_count, "/Users/diandra/rlp_meta/results/alldb_at_least_2_counts_ligand.xlsx")
+#1,870 entries
+
+#at least 3
+library(dplyr)
+library(readxl)
+library(writexl)
+
+# Read the output file
+results_ligand <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
+
+# Filter ligand-receptor pairs with at least 3 counts
+results_at_least_3_counts <- results_ligand %>% 
+  group_by(ligand) %>% 
+  filter(count >= 3) %>% 
+  ungroup()
+
+# Group by ligand and keep the interaction with the highest count
+results_top_count <- results_at_least_3_counts %>% 
+  group_by(ligand) %>% 
+  slice_max(count, n = 1) %>% 
+  ungroup() %>% 
+  arrange(desc(count))
+
+# Write the results to a new output file
+write_xlsx(results_top_count, "/Users/diandra/rlp_meta/results/alldb_at_least_3_counts_ligand.xlsx")
+#1,518 entries
+
 
 #TOP RECEPTORS-------------------------------------------------------------------------------
 #keep best interactions
