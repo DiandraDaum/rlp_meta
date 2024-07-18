@@ -18,7 +18,8 @@ results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
 file_names <- results_distinct$file %>%
   str_split("; ") %>%
   unlist() %>%
-  unique()
+  unique() %>%
+  sort()
 
 # Create a binary matrix to store the interaction data
 binary_matrix <- matrix(0, nrow = length(file_names), ncol = nrow(results_distinct))
@@ -69,7 +70,7 @@ jaccard_df_long <- jaccard_df %>%
 heatmap_plot <- ggplot(jaccard_df_long, aes(x = Var1, y = Var2, fill = value, label = round(value, 2))) + 
   geom_tile() + 
   geom_text() + 
-  scale_fill_gradient(low = "blue", high = "yellow", name = "Jaccard Index") + 
+  scale_fill_gradient(low = "royalblue2", high = "yellow", name = "Jaccard Index") + 
   theme_minimal() + 
   labs(x = "File", y = "File") + 
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
@@ -87,26 +88,26 @@ for (i in 1:nrow(file_legend)) {
 }
 
 # Save the plot as a PDF
-ggsave("/Users/diandra/rlp_meta/results/plots/heatmap_plot.pdf", plot = heatmap_plot, width = 8, height = 6, units = "in", dpi = 300)
+ggsave("/Users/diandra/rlp_meta/results/plots/Jaccard_plot.pdf", plot = heatmap_plot, width = 8, height = 6, units = "in", dpi = 300)
 
-#list of files:
-#1: Human-2019-Ximerakis-BaderLab-2017_new2.xlsx
-#2: Human-2015-Ramilowski-LR-pairs.xlsx
-##3: Human-2019-Wang-LR-pairs.csv
-#4: Human-2020-Hou-LR-pairs.xlsx
-#5: Human-2020-Shao-LR-pairs.txt
-#6: Human-2022-Dimitrov-LR-pairs.csv
-#7: LRdb_122019_SingleCellSignalIR.xlsx
-#8: NicheNet-LR-pairs.csv
-#9: OmniPathPPIs_new.tsv
-#10: Cellinker_Homos_2021.txt
-#11: Human-2017-Pavlicev-LR-pairs.xlsx
-#12: ICELLNETdb_v2_new.xlsx
-#13: CellCall-2021_new.xlsx
-#14: CellChatDB.humanv2-2023-Jin-LR-pairs_new.xlsx
-#15: Human-2014-Qiao-LR-pairs.xlsx
-#16: Human-2023-Zhao-LR-pairs_new.tsv
+#list of alphabetical order files numbers:
+#1: CCIDB_Human_new.xlsx
+#2: CellCall-2021_new.xlsx
+#3: CellChatDB.humanv2-2023-Jin-LR-pairs_new.xlsx
+#4: Cellinker_Homos_2021.txt
+#5: Human-2010-Kirouac-LR-pairs_new.xlsx
+#6: Human-2014-Qiao-LR-pairs.xlsx
+#7: Human-2015-Choi-LR-pairs.txt
+#8: Human-2015-Ramilowski-LR-pairs.xlsx
+#9: Human-2017-Pavlicev-LR-pairs.xlsx
+#10: Human-2019-Wang-LR-pairs.csv
+#11: Human-2019-Ximerakis-BaderLab-2017_new2.xlsx
+#12: Human-2020-Hou-LR-pairs.xlsx
+#13: Human-2020-Shao-LR-pairs.txt
+#14: Human-2022-Dimitrov-LR-pairs.csv
+#15: Human-2023-Zhao-LR-pairs_new.tsv
+#16: ICELLNETdb_v2_new.xlsx
 #17: Interaction_input_Vento_Cellphonedbv5_new.csv
-#18: Human-2010-Kirouac-LR-pairs_new.xlsx
-#19: Human-2015-Choi-LR-pairs.txt
-#20: CCIDB_Human_new.xlsx
+#18: LRdb_122019_SingleCellSignalIR.xlsx
+#19: NicheNet-LR-pairs.csv
+#20: OmniPathPPIs_new.tsv
