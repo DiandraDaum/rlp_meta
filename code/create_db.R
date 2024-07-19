@@ -125,51 +125,27 @@ write.csv(results_distinct, output_file_path, row.names = FALSE)
 write_xlsx(results_distinct, output_file_path2)
 #32,866 entries
 
-
-
-#CHECK SYMBOLS-------------------------------------------------------------------------------
-#check genesymbols with progress bar
-# Load the necessary libraries
+#top 2 counts-------------------------------------------------------------------
 library(readxl)
-library(org.Hs.eg.db)
 library(writexl)
-library(progress)
 
-# Load your data (replace 'your_data.csv' with your actual file name)
-data <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
+# Set the input file path
+input_file_path <- "/Users/diandra/rlp_meta/results/alldbfull.xlsx"
 
-# Create the ligand_valid and receptor_valid columns
-data$ligand_valid <- FALSE
-data$receptor_valid <- FALSE
+# Set the output file path
+output_file_path <- "/Users/diandra/rlp_meta/results/alldbfull_count2.xlsx"
 
-# Create a progress bar
-pb <- progress_bar$new(format = "[:bar] :percent eta: :eta", total = nrow(data))
+# Read the input file
+df <- read_xlsx(input_file_path)
 
-# Vectorize the is_gene_symbol function
-for (i in 1:nrow(data)) {
-  data$ligand_valid[i] <- data$ligand[i] %in% keys(org.Hs.eg.db, "SYMBOL")
-  data$receptor_valid[i] <- data$`receptor(s)`[i] %in% keys(org.Hs.eg.db, "SYMBOL")
-  pb$tick()
-}
+# Filter the data to only include pairs with a count of at least 2
+filtered_df <- df %>% 
+  filter(count >= 2) %>% 
+  arrange(desc(count))
 
-# Now you can use the data with the new columns
-# For example, you can filter the data to only include rows where both ligand and receptor are valid
-valid_data <- data[data$ligand_valid & data$receptor_valid, ]
+# Write the filtered data to the output file
+write_xlsx(filtered_df, output_file_path)
 
-# Store the removed rows in a separate data frame
-removed_data <- data[!(data$ligand_valid & data$receptor_valid), ]
-# Print the removed rows --> none
-print(removed_data)
-
-# Remove the rows that do not have valid gene symbols
-data <- data[data$ligand_valid & data$receptor_valid, ]
-
-# Remove the validation columns
-data <- data[,!(names(data) %in% c("ligand_valid", "receptor_valid"))]
-
-# Save the output to a new xlsx file
-write_xlsx(data, "/Users/diandra/rlp_meta/results/alldbfull.xlsx")
-#everything is valid :)
 
 #TOP LIGANDS-------------------------------------------------------------------------------
 #keep best interactions
@@ -263,3 +239,47 @@ results_top_countr <- results_receptor %>%
 # Write the results to a new output file
 write_xlsx(results_top_countr, "/Users/diandra/rlp_meta/results/alldb_top_count_receptor.xlsx")
 
+
+#CHECK SYMBOLS-------------------------------------------------------------------------------
+#check genesymbols with progress bar
+# Load the necessary libraries
+library(readxl)
+library(org.Hs.eg.db)
+library(writexl)
+library(progress)
+
+# Load your data (replace 'your_data.csv' with your actual file name)
+data <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
+
+# Create the ligand_valid and receptor_valid columns
+data$ligand_valid <- FALSE
+data$receptor_valid <- FALSE
+
+# Create a progress bar
+pb <- progress_bar$new(format = "[:bar] :percent eta: :eta", total = nrow(data))
+
+# Vectorize the is_gene_symbol function
+for (i in 1:nrow(data)) {
+  data$ligand_valid[i] <- data$ligand[i] %in% keys(org.Hs.eg.db, "SYMBOL")
+  data$receptor_valid[i] <- data$`receptor(s)`[i] %in% keys(org.Hs.eg.db, "SYMBOL")
+  pb$tick()
+}
+
+# Now you can use the data with the new columns
+# For example, you can filter the data to only include rows where both ligand and receptor are valid
+valid_data <- data[data$ligand_valid & data$receptor_valid, ]
+
+# Store the removed rows in a separate data frame
+removed_data <- data[!(data$ligand_valid & data$receptor_valid), ]
+# Print the removed rows --> none
+print(removed_data)
+
+# Remove the rows that do not have valid gene symbols
+data <- data[data$ligand_valid & data$receptor_valid, ]
+
+# Remove the validation columns
+data <- data[,!(names(data) %in% c("ligand_valid", "receptor_valid"))]
+
+# Save the output to a new xlsx file
+write_xlsx(data, "/Users/diandra/rlp_meta/results/alldbfull.xlsx")
+#everything is valid :)
