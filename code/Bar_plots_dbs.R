@@ -24,20 +24,27 @@ total_pairs_in_file <- nrow(results_distinct)
 
 # Assign a number and color to each file
 file_pairs <- file_pairs %>%
-  mutate(file_num = as.numeric(factor(file))) %>%
-  arrange(file_num) %>%
+  mutate(file_num = reorder(file, total_pairs)) %>%
   mutate(file_color = as.numeric(factor(file)))
 
-# Create and save a bar plot
-p<- ggplot(file_pairs, aes(x = file_num, y = total_pairs, fill = factor(file_num))) + 
-    geom_bar(stat = "identity") + 
-    geom_text(aes(label = comma(total_pairs)), vjust = -0.5, size = 3) + 
-    labs(x = "DB files", y = "Total Number of lrps") + 
-    ggtitle("Ligand-receptor pairs in each dataset") + 
-    theme_classic() + 
-    scale_fill_discrete(name = "File Name", labels = paste0(file_pairs$file, " (", file_pairs$file_num, ")")) + 
-    scale_y_continuous(labels = comma, breaks = seq(0, total_pairs_in_file, by = 2000), limits = c(0, total_pairs_in_file)) + 
-    annotate("text", x = mean(file_pairs$file_num) + 0.5, y = total_pairs_in_file, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
+#cut file names
+file_pairs$file_num_truncated <- str_sub(file_pairs$file_num, 1, 10)
+
+# Reorder the file_num_truncated variable
+file_pairs <- file_pairs %>%
+  mutate(file_num_truncated = reorder(file_num_truncated, total_pairs))
+
+# Create the plot
+p <- ggplot(file_pairs, aes(x = file_num_truncated, y = total_pairs, fill = factor(file_num_truncated))) + 
+  geom_bar(stat = "identity") + 
+  geom_text(aes(label = comma(total_pairs)), vjust = -0.5, size = 3) + 
+  labs(x = "DB files", y = "Total Number of lrps") + 
+  ggtitle("Ligand-receptor pairs in each dataset") + 
+  theme_classic() + 
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) + 
+  scale_y_continuous(labels = comma, breaks = seq(0, total_pairs_in_file, by = 2000), limits = c(0, total_pairs_in_file * 1.05)) + 
+  annotate("text", x = 1, y = total_pairs_in_file * 0.99, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
 
 # Print the plot to the Plots pane in RStudio
 print(p)
@@ -72,20 +79,27 @@ total_pairs_in_file <- nrow(results_distinct_filtered)
 
 # Assign a number and color to each file
 file_pairs <- file_pairs %>%
-  mutate(file_num = as.numeric(factor(file))) %>%
-  arrange(file_num) %>%
+  mutate(file_num = reorder(file, total_pairs)) %>%
   mutate(file_color = as.numeric(factor(file)))
 
-# Create and save a bar plot
-p <- ggplot(file_pairs, aes(x = file_num, y = total_pairs, fill = factor(file_num))) + 
+#cut file names
+file_pairs$file_num_truncated <- str_sub(file_pairs$file_num, 1, 10)
+
+# Reorder the file_num_truncated variable
+file_pairs <- file_pairs %>%
+  mutate(file_num_truncated = reorder(file_num_truncated, total_pairs))
+
+# Create the plot
+p <- ggplot(file_pairs, aes(x = file_num_truncated, y = total_pairs, fill = factor(file_num_truncated))) + 
   geom_bar(stat = "identity") + 
   geom_text(aes(label = comma(total_pairs)), vjust = -0.5, size = 3) + 
   labs(x = "DB files", y = "Total Number of lrps") + 
-  ggtitle("Ligand-receptor pairs in each dataset (count >= 2)") + 
+  ggtitle("Ligand-receptor pairs in each dataset") + 
   theme_classic() + 
-  scale_fill_discrete(name = "File Name", labels = paste0(file_pairs$file, " (", file_pairs$file_num, ")")) + 
-  scale_y_continuous(labels = comma, breaks = seq(0, total_pairs_in_file, by = 1000), limits = c(0, total_pairs_in_file)) + 
-  annotate("text", x = mean(file_pairs$file_num) + 0.5, y = total_pairs_in_file, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) + 
+  scale_y_continuous(labels = comma, breaks = seq(0, total_pairs_in_file, by = 1000), limits = c(0, total_pairs_in_file * 1.05)) + 
+  annotate("text", x = 1, y = total_pairs_in_file * 0.99, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
 
 # Print the plot to the Plots pane in RStudio
 print(p)
@@ -120,27 +134,33 @@ total_pairs_in_file <- nrow(results_distinct_filtered)
 
 # Assign a number and color to each file
 file_pairs <- file_pairs %>%
-  mutate(file_num = as.numeric(factor(file))) %>%
-  arrange(file_num) %>%
+  mutate(file_num = reorder(file, total_pairs)) %>%
   mutate(file_color = as.numeric(factor(file)))
 
-# Create and save a bar plot
-p <- ggplot(file_pairs, aes(x = file_num, y = total_pairs, fill = factor(file_num))) + 
+#cut file names
+file_pairs$file_num_truncated <- str_sub(file_pairs$file_num, 1, 10)
+
+# Reorder the file_num_truncated variable
+file_pairs <- file_pairs %>%
+  mutate(file_num_truncated = reorder(file_num_truncated, total_pairs))
+
+# Create the plot
+p <- ggplot(file_pairs, aes(x = file_num_truncated, y = total_pairs, fill = factor(file_num_truncated))) + 
   geom_bar(stat = "identity") + 
   geom_text(aes(label = comma(total_pairs)), vjust = -0.5, size = 3) + 
   labs(x = "DB files", y = "Total Number of lrps") + 
-  ggtitle("Ligand-receptor pairs in each dataset (count >= 3)") + 
+  ggtitle("Ligand-receptor pairs in each dataset") + 
   theme_classic() + 
-  scale_fill_discrete(name = "File Name", labels = paste0(file_pairs$file, " (", file_pairs$file_num, ")")) + 
-  scale_y_continuous(labels = comma, breaks = seq(0, total_pairs_in_file, by = 500), limits = c(0, total_pairs_in_file)) + 
-  annotate("text", x = mean(file_pairs$file_num) + 0.5, y = total_pairs_in_file, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) + 
+  scale_y_continuous(labels = comma, breaks = seq(0, total_pairs_in_file, by = 500), limits = c(0, total_pairs_in_file * 1.05)) + 
+  annotate("text", x = 1, y = total_pairs_in_file * 0.99, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
 
 # Print the plot to the Plots pane in RStudio
 print(p)
 
 # Save the plot as a PDF
 ggsave("/Users/diandra/rlp_meta/results/plots/ligand_receptor_pairs3.pdf", width = 8, height = 6, units = "in")
-
 
 #input top_ligand2--------------------------------------------------------------
 #input:alldb_at_least_2_counts_ligand.xlsx
@@ -166,20 +186,27 @@ total_pairs_in_file <- nrow(results_distinct)
 
 # Assign a number and color to each file
 file_pairs <- file_pairs %>%
-  mutate(file_num = as.numeric(factor(file))) %>%
-  arrange(file_num) %>%
+  mutate(file_num = reorder(file, total_pairs)) %>%
   mutate(file_color = as.numeric(factor(file)))
 
-# Create and save a bar plot
-p<- ggplot(file_pairs, aes(x = file_num, y = total_pairs, fill = factor(file_num))) + 
+#cut file names
+file_pairs$file_num_truncated <- str_sub(file_pairs$file_num, 1, 10)
+
+# Reorder the file_num_truncated variable
+file_pairs <- file_pairs %>%
+  mutate(file_num_truncated = reorder(file_num_truncated, total_pairs))
+
+# Create the plot
+p <- ggplot(file_pairs, aes(x = file_num_truncated, y = total_pairs, fill = factor(file_num_truncated))) + 
   geom_bar(stat = "identity") + 
   geom_text(aes(label = comma(total_pairs)), vjust = -0.5, size = 3) + 
   labs(x = "DB files", y = "Total Number of lrps") + 
-  ggtitle("Best receptor for each ligand (min count 2)") + 
+  ggtitle("Ligand-receptor pairs in each dataset") + 
   theme_classic() + 
-  scale_fill_discrete(name = "File Name", labels = paste0(file_pairs$file, " (", file_pairs$file_num, ")")) + 
-  scale_y_continuous(labels = comma, breaks = seq(0, total_pairs_in_file, by = 500), limits = c(0, total_pairs_in_file)) + 
-  annotate("text", x = mean(file_pairs$file_num) + 0.5, y = total_pairs_in_file, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) + 
+  scale_y_continuous(labels = comma, breaks = seq(0, total_pairs_in_file, by = 500), limits = c(0, total_pairs_in_file * 1.05)) + 
+  annotate("text", x = 1, y = total_pairs_in_file * 0.99, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
 
 # Print the plot to the Plots pane in RStudio
 print(p)
@@ -211,20 +238,27 @@ total_pairs_in_file <- nrow(results_distinct)
 
 # Assign a number and color to each file
 file_pairs <- file_pairs %>%
-  mutate(file_num = as.numeric(factor(file))) %>%
-  arrange(file_num) %>%
+  mutate(file_num = reorder(file, total_pairs)) %>%
   mutate(file_color = as.numeric(factor(file)))
 
-# Create and save a bar plot
-p<- ggplot(file_pairs, aes(x = file_num, y = total_pairs, fill = factor(file_num))) + 
+#cut file names
+file_pairs$file_num_truncated <- str_sub(file_pairs$file_num, 1, 10)
+
+# Reorder the file_num_truncated variable
+file_pairs <- file_pairs %>%
+  mutate(file_num_truncated = reorder(file_num_truncated, total_pairs))
+
+# Create the plot
+p <- ggplot(file_pairs, aes(x = file_num_truncated, y = total_pairs, fill = factor(file_num_truncated))) + 
   geom_bar(stat = "identity") + 
   geom_text(aes(label = comma(total_pairs)), vjust = -0.5, size = 3) + 
   labs(x = "DB files", y = "Total Number of lrps") + 
-  ggtitle("Best receptor for each ligand (min count 3)") + 
+  ggtitle("Ligand-receptor pairs in each dataset") + 
   theme_classic() + 
-  scale_fill_discrete(name = "File Name", labels = paste0(file_pairs$file, " (", file_pairs$file_num, ")")) + 
-  scale_y_continuous(labels = comma, breaks = seq(0, total_pairs_in_file, by = 250), limits = c(0, total_pairs_in_file)) + 
-  annotate("text", x = mean(file_pairs$file_num) + 0.5, y = total_pairs_in_file, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) + 
+  scale_y_continuous(labels = comma, breaks = seq(0, total_pairs_in_file, by = 250), limits = c(0, total_pairs_in_file * 1.05)) + 
+  annotate("text", x = 1, y = total_pairs_in_file * 0.99, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
 
 # Print the plot to the Plots pane in RStudio
 print(p)
