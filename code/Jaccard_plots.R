@@ -238,10 +238,14 @@ shorten_file_names <- Vectorize(function(x) {
 
 # Calculate mean sharing values for each file
 mean_sharing_values <- rowMeans(percent_shared_matrix)
-mean_sharing_df <- data.frame(Var1 = shorten_file_names(file_names), 
-                              Var2 = shorten_file_names("Mean_Sharing"), 
-                              value = mean_sharing_values)
 
+# Create a data frame for mean sharing values
+# Create a data frame for mean sharing values
+mean_sharing_df <- data.frame(Var2 = "Mean_Sharing", 
+                              value = mean_sharing_values, 
+                              stringsAsFactors = FALSE)
+
+# Bind the mean sharing data frame to the long format data frame
 percent_shared_df_long <- percent_shared_df %>%
   tibble::rownames_to_column("Var1") %>%
   tidyr::pivot_longer(cols = -Var1, 
@@ -249,8 +253,9 @@ percent_shared_df_long <- percent_shared_df %>%
                       values_to = "value") %>%
   mutate(Var1 = sapply(Var1, shorten_file_names),
          Var2 = sapply(Var2, shorten_file_names)) %>%
-  bind_rows(mean_sharing_df) %>%
-  arrange(Var2)
+  group_by(Var1) %>%
+  mutate(mean_sharing = mean_sharing_df$value[match(Var1, unique(Var1))]) %>%
+  select(Var1, Var2, value, everything())
 
 heatmap_plot <- ggplot(percent_shared_df_long, aes(x = Var1, y = Var2, fill = value, label = round(value, 2))) + 
   geom_tile() + 
@@ -266,6 +271,6 @@ heatmap_plot <- ggplot(percent_shared_df_long, aes(x = Var1, y = Var2, fill = va
 # Print the heatmap
 print(heatmap_plot)
 
-
 # Save the plot as a PDF
 ggsave("/Users/diandra/rlp_meta/results/plots/Percent_Shared_plot_new.pdf", plot = heatmap_plot, width = 8, height = 6, units = "in", dpi = 300)
+
