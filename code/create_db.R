@@ -147,6 +147,27 @@ filtered_df <- df %>%
 write_xlsx(filtered_df, output_file_path)
 
 
+#top3---------------------------------------------------------------------------
+library(readxl)
+library(writexl)
+
+# Set the input file path
+input_file_path <- "/Users/diandra/rlp_meta/results/alldbfull.xlsx"
+
+# Set the output file path
+output_file_path <- "/Users/diandra/rlp_meta/results/alldbfull_count3.xlsx"
+
+# Read the input file
+df <- read_xlsx(input_file_path)
+
+# Filter the data to only include pairs with a count of at least 3
+filtered_df <- df %>% 
+  filter(count >= 3) %>% 
+  arrange(desc(count))
+
+# Write the filtered data to the output file
+write_xlsx(filtered_df, output_file_path)
+
 #TOP LIGANDS-------------------------------------------------------------------------------
 #keep best interactions
 #best receptor for each ligand

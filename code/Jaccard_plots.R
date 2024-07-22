@@ -13,7 +13,9 @@ library(gridExtra)
 
 #jaccard matrix names-----------------------------------------------------------------
 # Read the xlsx output file
-results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
+#results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
+#results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull_count2.xlsx")
+results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull_count3.xlsx")
 
 # Extract the file names from the "file" column
 file_names <- results_distinct$file %>%
@@ -82,7 +84,7 @@ jaccard_plot <- ggplot(jaccard_df_long, aes(x = Var1, y = Var2, fill = value, la
   scale_fill_gradient(low = "royalblue2", high = "yellow", name = "Jaccard Index") + 
   theme_minimal() + 
   labs(x = "File", y = "File") + 
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
   theme(axis.text.y = element_text(angle = 0, hjust = 1)) + 
   theme(panel.grid.major = element_line(linewidth = 0.5, linetype = "solid", colour = "black")) + 
   theme(legend.position = "right")
@@ -91,7 +93,9 @@ jaccard_plot <- ggplot(jaccard_df_long, aes(x = Var1, y = Var2, fill = value, la
 print(jaccard_plot)
 
 # Save the plot as a PDF
-ggsave("/Users/diandra/rlp_meta/results/plots/Jaccard_plot_new.pdf", plot = jaccard_plot, width = 8, height = 6, units = "in", dpi = 300)
+#ggsave("/Users/diandra/rlp_meta/results/plots/Jaccard_plot_new.pdf", plot = jaccard_plot, width = 8, height = 6, units = "in", dpi = 300)
+#ggsave("/Users/diandra/rlp_meta/results/plots/Jaccard_plot_new2.pdf", plot = jaccard_plot, width = 8, height = 6, units = "in", dpi = 300)
+ggsave("/Users/diandra/rlp_meta/results/plots/Jaccard_plot_new3.pdf", plot = jaccard_plot, width = 8, height = 6, units = "in", dpi = 300)
 
 
 
@@ -99,7 +103,9 @@ ggsave("/Users/diandra/rlp_meta/results/plots/Jaccard_plot_new.pdf", plot = jacc
 #% sharing names------------------------------------------------------------------
 #code to obtain a % matrix of sharing interaction pairs between the files that were use to create the input file:
 # Read the xlsx output file
-results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
+#results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
+#results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull_count2.xlsx")
+results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull_count3.xlsx")
 
 # Extract the file names from the "file" column
 file_names <- results_distinct$file %>%
@@ -184,7 +190,7 @@ heatmap_plot <- ggplot(percent_shared_df_long, aes(x = Var1, y = Var2, fill = va
   scale_fill_gradient(low = "royalblue2", high = "yellow", name = "% Shared lrps") + 
   theme_minimal() + 
   labs(x = "File", y = "File") + 
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
   theme(axis.text.y = element_text(angle = 0, hjust = 1)) + 
   theme(panel.grid.major = element_line(linewidth = 0.5, linetype = "solid", colour = "black")) + 
   theme(legend.position = "right")
@@ -193,5 +199,7 @@ heatmap_plot <- ggplot(percent_shared_df_long, aes(x = Var1, y = Var2, fill = va
 print(heatmap_plot)
 
 # Save the plot as a PDF
-ggsave("/Users/diandra/rlp_meta/results/plots/Percent_Shared_plot_new.pdf", plot = heatmap_plot, width = 8, height = 6, units = "in", dpi = 300)
+#ggsave("/Users/diandra/rlp_meta/results/plots/Percent_Shared_plot_new.pdf", plot = heatmap_plot, width = 8, height = 6, units = "in", dpi = 300)
+#ggsave("/Users/diandra/rlp_meta/results/plots/Percent_Shared_plot_new2.pdf", plot = heatmap_plot, width = 8, height = 6, units = "in", dpi = 300)
+ggsave("/Users/diandra/rlp_meta/results/plots/Percent_Shared_plot_new3.pdf", plot = heatmap_plot, width = 8, height = 6, units = "in", dpi = 300)
 
