@@ -94,7 +94,7 @@ p <- ggplot(file_pairs, aes(x = file_num_truncated, y = total_pairs, fill = fact
   geom_bar(stat = "identity") + 
   geom_text(aes(label = comma(total_pairs)), vjust = -0.5, size = 3) + 
   labs(x = "DB files", y = "Total Number of lrps") + 
-  ggtitle("Ligand-receptor pairs in each dataset") + 
+  ggtitle("Ligand-receptor pairs in each dataset (count >= 2)") + 
   theme_classic() + 
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) + 
@@ -149,7 +149,7 @@ p <- ggplot(file_pairs, aes(x = file_num_truncated, y = total_pairs, fill = fact
   geom_bar(stat = "identity") + 
   geom_text(aes(label = comma(total_pairs)), vjust = -0.5, size = 3) + 
   labs(x = "DB files", y = "Total Number of lrps") + 
-  ggtitle("Ligand-receptor pairs in each dataset") + 
+  ggtitle("Ligand-receptor pairs in each dataset (count >= 3)") + 
   theme_classic() + 
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) + 
@@ -201,7 +201,7 @@ p <- ggplot(file_pairs, aes(x = file_num_truncated, y = total_pairs, fill = fact
   geom_bar(stat = "identity") + 
   geom_text(aes(label = comma(total_pairs)), vjust = -0.5, size = 3) + 
   labs(x = "DB files", y = "Total Number of lrps") + 
-  ggtitle("Ligand-receptor pairs in each dataset") + 
+  ggtitle("Ligand-receptor pairs in each dataset (top2_ligand)") + 
   theme_classic() + 
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) + 
@@ -253,7 +253,7 @@ p <- ggplot(file_pairs, aes(x = file_num_truncated, y = total_pairs, fill = fact
   geom_bar(stat = "identity") + 
   geom_text(aes(label = comma(total_pairs)), vjust = -0.5, size = 3) + 
   labs(x = "DB files", y = "Total Number of lrps") + 
-  ggtitle("Ligand-receptor pairs in each dataset") + 
+  ggtitle("Ligand-receptor pairs in each dataset (top3_ligand)") + 
   theme_classic() + 
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) + 
