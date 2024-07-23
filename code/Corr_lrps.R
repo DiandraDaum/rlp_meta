@@ -8,16 +8,17 @@ library(stringr)
 library(writexl)
 
 #read database
-database <- read_xlsx("~/rlp_meta/results/alldb_top3_ligand.xlsx")
+database <- read_xlsx("~/rlp_meta/results/alldb_at_least_2_counts_ligand.xlsx")
 
 #read proteomics matrix
 #dataset m = proteomics matrix: proteins rows, sample s columns. 
-m <- read.csv("~/rlp_meta/data/covid_data/ms_covid19_and_controls/babacic_2023_nat_comms_matrix.csv")
+m <- read.csv("~/covid_data/ms_covid19_and_controls/babacic_2023_nat_comms_matrix.csv")
+colnames(m)[1] <- "Protein"
 
-#extracted lrps from database
-ligand=()
-receptors=()
-lrp_list=()
+#extracted lrps lists from database
+l <- as.list(database$ligand) #ligands list
+r <- as.list(database$`receptor(s)`) #receptors list
+lrps <- as.list(database$interaction) #lrps list
 
 #results lists/vectors = 6 parameters (pair name A_B, correlation, n_li, n_ri, na_li, na_ri)
 spearman_results <- data.frame(rlp = character(), spearman_corr = character(), 
@@ -25,14 +26,22 @@ spearman_results <- data.frame(rlp = character(), spearman_corr = character(),
 pearson_results <- data.frame(rlp = character(), pearson_corr = character(), 
                               n_li = character(), n_ri = character(), na_li = character(), na_ri = character())
 
-#extracted lrps from database fo lrp_list
-for i in 1:length(database): 
+#extract lrps 
+for i in 1:length(l): 
   li=l[i, ]
   ri=r[ ,i]
+  #test li and ri in m
+  #add warning if receptor/ligand only was found but not the other one
+  if (li %in% m$Protein) & (ri %in% m$Protein):
+    continue
+  elif (li %in% m$Protein) & (ri % not in% m$Protein):
+    print("ligand in m but receptor not in m")
+  elif (ri %in% m$Protein) & (ri %not in% m$Protein):
+    print("receptor in m but ligand not in m")
+  else:
+    print("ligand and receptor not in m")
   
 
-#test li and ri in m 
-#add warning if receptor/ligand only was found but not the other one
 
   
 
