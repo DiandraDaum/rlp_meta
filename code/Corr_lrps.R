@@ -40,19 +40,14 @@ for (i in 1:length(l)) {
     lim <- c(lim, list(li_row))
     rim <- c(rim, list(ri_row))
   } else if (lii %in% m$Protein &!(rii %in% m$Protein)) {
-    print(paste("ligand", lii, "in m but receptor", rii, "not in m"))
+    print(paste("ligand", lii, "in m but receptor", rii, "not in matrix"))
   } else if (rii %in% m$Protein &!(lii %in% m$Protein)) {
-    print(paste("receptor", rii, "in m but ligand", lii, "not in m"))
+    print(paste("receptor", rii, "in m but ligand", lii, "not in matrix"))
   } else {
-    print(paste("ligand", lii, "and receptor", rii, "not in m"))
+    print(paste("ligand", lii, "and receptor", rii, "not in matrix"))
   }
 }
 
-
-#n length = sample size
-#Minimal optimal sample size  (6?)
-n_li=length(lim)
-n_ri=length(rim)
 
 # Extract the numeric elements from each inner list
 lim_values <- do.call(rbind, lapply(lim, function(x) as.numeric(x[-1])))
@@ -65,6 +60,12 @@ rownames(rim_values) <- sapply(rim, function(x) x$Protein)
 # Set the column names to the sample names
 colnames(lim_values) <- colnames(m)[2:ncol(m)]
 colnames(rim_values) <- colnames(m)[2:ncol(m)]
+
+#n length = sample size
+#Minimal optimal sample size  (6?)
+n_li=length(lim)
+n_ri=length(rim)
+
 
 #n length = sample size
 #Minimal optimal sample size  (6?)
@@ -84,26 +85,53 @@ na_ri=length(rim_values)
 #It can be used when association is nonlinear.
 #It can be applied for ordinal variables.
 #spearman_corr <- cor.test(lim_values, rim_values, method = 'spearman')
-spearman_corrs <- matrix(NA, nrow(lim_values), nrow(rim_values))
+spearman_corrs <- matrix(NA, nrow(lim_values), 2)
 rownames(spearman_corrs) <- paste(rownames(lim_values), rownames(rim_values), sep = "_")
-colnames(spearman_corrs) <- rownames(rim_values)
+colnames(spearman_corrs) <- c("X_correlation", "HC_correlation")
 
 for (i in 1:nrow(lim_values)) {
   for (j in 1:nrow(rim_values)) {
     li_values <- lim_values[i, , drop = FALSE]
     ri_values <- rim_values[j, , drop = FALSE]
-    ok <- complete.cases(li_values) & complete.cases(ri_values)
-    if (any(ok)) {
-      spearman_corrs[i, j] <- cor(li_values[ok], ri_values[ok], method = "spearman")
+    ok_x <- complete.cases(li_values[, grep("^X", colnames(li_values))]) & complete.cases(ri_values[, grep("^X", colnames(ri_values))])
+    ok_h <- complete.cases(li_values[, grep("^H", colnames(li_values))]) & complete.cases(ri_values[, grep("^H", colnames(ri_values))])
+    if (any(ok_x)) {
+      spearman_corrs[i, 1] <- cor(li_values[, grep("^X", colnames(li_values))][ok_x], ri_values[, grep("^X", colnames(ri_values))][ok_x], method = "spearman")
     } else {
-      spearman_corrs[i, j] <- NA
+      spearman_corrs[i, 1] <- NA
+    }
+    if (any(ok_h)) {
+      spearman_corrs[i, 2] <- cor(li_values[, grep("^H", colnames(li_values))][ok_h], ri_values[, grep("^H", colnames(ri_values))][ok_h], method = "spearman")
+    } else {
+      spearman_corrs[i, 2] <- NA
     }
   }
 }
 #PEARSON correlation
 #example: corr.one <- cor(data$x[data$category=="One"], data$y[data$category=="One"], method = 'pearson')
 #pearson_corr <- cor.test(lim, rim, method = 'pearson')
+pearson_corrs <- matrix(NA, nrow(lim_values), 2)
+rownames(pearson_corrs) <- paste(rownames(lim_values), rownames(rim_values), sep = "_")
+colnames(pearson_corrs) <- c("X_correlation", "H_correlation")
 
+for (i in 1:nrow(lim_values)) {
+  for (j in 1:nrow(rim_values)) {
+    li_values <- lim_values[i, , drop = FALSE]
+    ri_values <- rim_values[j, , drop = FALSE]
+    ok_x <- complete.cases(li_values[, grep("^X", colnames(li_values))]) & complete.cases(ri_values[, grep("^X", colnames(ri_values))])
+    ok_h <- complete.cases(li_values[, grep("^H", colnames(li_values))]) & complete.cases(ri_values[, grep("^H", colnames(ri_values))])
+    if (any(ok_x)) {
+      pearson_corrs[i, 1] <- cor(li_values[, grep("^X", colnames(li_values))][ok_x], ri_values[, grep("^X", colnames(ri_values))][ok_x], method = "pearson")
+    } else {
+      pearson_corrs[i, 1] <- NA
+    }
+    if (any(ok_h)) {
+      pearson_corrs[i, 2] <- cor(li_values[, grep("^H", colnames(li_values))][ok_h], ri_values[, grep("^H", colnames(ri_values))][ok_h], method = "pearson")
+    } else {
+      pearson_corrs[i, 2] <- NA
+    }
+  }
+}
 
 
 #extract results
