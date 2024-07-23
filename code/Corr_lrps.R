@@ -27,23 +27,30 @@ pearson_results <- data.frame(rlp = character(), pearson_corr = character(),
                               n_li = character(), n_ri = character(), na_li = character(), na_ri = character())
 
 #extract lrps 
-for i in 1:length(l): 
-  li=l[i, ]
-  ri=r[ ,i]
-  #test li and ri in m
-  #add warning if receptor/ligand only was found but not the other one
-  if (li %in% m$Protein) & (ri %in% m$Protein):
-    continue
-  elif (li %in% m$Protein) & (ri % not in% m$Protein):
-    print("ligand in m but receptor not in m")
-  elif (ri %in% m$Protein) & (ri %not in% m$Protein):
-    print("receptor in m but ligand not in m")
-  else:
-    print("ligand and receptor not in m")
-  
+ri <- list() # found receptor list
+li <- list() # found ligand list
+for (i in 1:length(l)) {
+  lii = l[i]
+  rii = r[i]
+  # test li and ri in m
+  # add warning if receptor/ligand only was found but not the other one
+  if (lii %in% m$Protein & rii %in% m$Protein) {
+    ri <- c(ri, list(rii))
+    li <- c(li, list(lii))
+  } else if (lii %in% m$Protein & !(rii %in% m$Protein)) {
+    print(paste("ligand", lii, "in m but receptor", rii, "not in m"))
+  } else if (rii %in% m$Protein & !(lii %in% m$Protein)) {
+    print(paste("receptor", rii, "in m but ligand", lii, "not in m"))
+  } else {
+    print(paste("ligand", lii, "and receptor", rii, "not in m"))
+  }
+}
 
 
-  
+#n length = sample size
+#Minimal optimal sample size  (6?)
+n_li=length(li)
+n_ri=length(ri)
 
 #correlation tests:
 #r=0; there is no relation between the variable. r=+1; perfectly positively correlated.
@@ -57,23 +64,18 @@ for i in 1:length(l):
 #If association is monotonically decreasing then rs = -1.
 #It can be used when association is nonlinear.
 #It can be applied for ordinal variables.
-spearman <- cor.test(x, y, method = “spearman”)
+spearman <- cor.test(li, ri, method = 'spearman')
   
   
 #PEARSON correlation
 #example: corr.one <- cor(data$x[data$category=="One"], data$y[data$category=="One"], method = 'pearson')
-pearson <- cor.test(x, y, method = “pearson”)
+pearson <- cor.test(x, y, method = 'pearson')
 
 
 
 #extract results
 #cor.res$estimate|pi value|confidence intervals|degrees of freedom
 
-
-#n length = sample size
-#Minimal optimal sample size  (6?)
-n_li=
-n_ri=
 
   
 #Store as result list in the beginning
