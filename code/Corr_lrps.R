@@ -82,28 +82,55 @@ na_ri=length(rim_values)
 #rs = 0 means there is no association.
 #If association is monotonically increasing then rs = 1.
 #If association is monotonically decreasing then rs = -1.
-#It can be used when association is nonlinear.
-#It can be applied for ordinal variables.
+#It can be used when association is nonlinear.It can be applied for ordinal variables.
 #spearman_corr <- cor.test(lim_values, rim_values, method = 'spearman')
-spearman_corrs <- matrix(NA, nrow(lim_values), 2)
+spearman_corrs <- matrix(NA, nrow(lim_values), 5)
 rownames(spearman_corrs) <- paste(rownames(lim_values), rownames(rim_values), sep = "_")
-colnames(spearman_corrs) <- c("X_correlation", "HC_correlation")
+colnames(spearman_corrs) <- c("Tot_correlation", "p-value", "Tot_sample_size", "X_correlation", "HC_correlation")
 
 for (i in 1:nrow(lim_values)) {
   for (j in 1:nrow(rim_values)) {
     li_values <- lim_values[i, , drop = FALSE]
     ri_values <- rim_values[j, , drop = FALSE]
+    li_non_na <- sum(!is.na(li_values))
+    ri_non_na <- sum(!is.na(ri_values))
+    ok <- li_non_na > 0 & ri_non_na > 0
     ok_x <- complete.cases(li_values[, grep("^X", colnames(li_values))]) & complete.cases(ri_values[, grep("^X", colnames(ri_values))])
     ok_h <- complete.cases(li_values[, grep("^H", colnames(li_values))]) & complete.cases(ri_values[, grep("^H", colnames(ri_values))])
-    if (any(ok_x)) {
-      spearman_corrs[i, 1] <- cor(li_values[, grep("^X", colnames(li_values))][ok_x], ri_values[, grep("^X", colnames(ri_values))][ok_x], method = "spearman")
+    if (ok) {
+      if (li_non_na == ri_non_na) {
+        corr_result <- cor.test(li_values, ri_values, method = "spearman")
+        spearman_corrs[i, 1] <- corr_result$estimate
+        spearman_corrs[i, 2] <- corr_result$p.value
+        spearman_corrs[i, 3] <- min(li_non_na, ri_non_na)  # count the minimum number of non-NA values
+      } else (pass) {
+        corr_result <- cor.test(li_values, ri_values, method = "spearman")
+        spearman_corrs[i, 1] <- corr_result$estimate
+        spearman_corrs[i, 2] <- corr_result$p.value
+        spearman_corrs[i, 3] <- min(li_non_na, ri_non_na)  # count the minimum number of non-NA values
+       
     } else {
       spearman_corrs[i, 1] <- NA
+      spearman_corrs[i, 2] <- NA
+      spearman_corrs[i, 3] <- 0
+    }
+    if (any(ok_x)) {
+      if (sum(!is.na(li_values[, grep("^X", colnames(li_values))])) > 1 && sum(!is.na(ri_values[, grep("^X", colnames(ri_values))])) > 1) {
+        spearman_corrs[i, 4] <- cor(li_values[, grep("^X", colnames(li_values))], ri_values[, grep("^X", colnames(ri_values))], method = "spearman", use = "pairwise.complete.obs")
+      } else {
+        spearman_corrs[i, 4] <- NA
+      }
+    } else {
+      spearman_corrs[i, 4] <- NA
     }
     if (any(ok_h)) {
-      spearman_corrs[i, 2] <- cor(li_values[, grep("^H", colnames(li_values))][ok_h], ri_values[, grep("^H", colnames(ri_values))][ok_h], method = "spearman")
+      if (sum(!is.na(li_values[, grep("^H", colnames(li_values))])) > 1 && sum(!is.na(ri_values[, grep("^H", colnames(ri_values))])) > 1) {
+        spearman_corrs[i, 5] <- cor(li_values[, grep("^H", colnames(li_values))], ri_values[, grep("^H", colnames(ri_values))], method = "spearman", use = "pairwise.complete.obs")
+      } else {
+        spearman_corrs[i, 5] <- NA
+      }
     } else {
-      spearman_corrs[i, 2] <- NA
+      spearman_corrs[i, 5] <- NA
     }
   }
 }
