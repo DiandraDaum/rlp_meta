@@ -24,41 +24,34 @@ pearson_results <- data.frame(rlp = character(), pearson_corr = character(),
                               n_li = character(), n_ri = character(), na_li = character(), na_ri = character())
 
 # Get a list of files in the folder
-folder_path <- "~/covid_data/ms_covid19_and_controls"
-files <- dir(folder_path, pattern = "*.csv|*.txt|*.tsv|*.xlsx")
+m_folder_path <- "~/covid_data/ms_covid19_and_controls/Clean_matrix"
+files <- dir(m_folder_path, pattern = "*.csv|*.txt|*.tsv|*.xlsx")
 
 # Initialize lists to store lim and rim values
+# Initialize empty lists to store lim and rim values
 all_lim_values <- list()
 all_rim_values <- list()
 
-# Loop over each file
-for (file in files) {
-  # Read the file
-  file_path <- file.path(folder_path, file)
-  if (grepl("\\.csv", file)) {
-    m <- read_csv(file_path, show_col_types = FALSE)
-  } else if (grepl("\\.txt", file)) {
-    m <- read_table(file_path, show_col_types = FALSE)
-  } else if (grepl("\\.tsv", file)) {
-    m <- read_tsv(file_path, show_col_types = FALSE)
-  } else if (grepl("\\.xlsx", file)) {
-    m <- read_xlsx(file_path)
-  } else {
-    cat("The file", file, "cannot be read because it is not.csv or.txt or.tsv or.xlsx.\n")
-    next
-  }
+# Loop over each file in the folder
+# Loop over each file in the folder
+for (m in dir(m_folder_path, pattern = "*.csv")) {
+  m_file_path <- file.path(m_folder_path, m)
   
-  # Set the first column name to "Protein"
+  # Read the file
+  m <- read.csv(m_file_path)
   colnames(m)[1] <- "Protein"
   
-  # Initialize lists to store lim and rim
-  lim <- list() 
-  rim <- list() 
+  # Remove rows with NA values in the Protein column
+  m <- m[!is.na(m$Protein), ]
   
   # Loop over each ligand-receptor pair
   for (i in 1:length(l)) {
     lii = l[i]
     rii = r[i]
+    
+    # Initialize empty lists to store lim and rim
+    lim <- list()
+    rim <- list()
     
     # Test li and ri in m
     if (lii %in% m$Protein & rii %in% m$Protein) {
@@ -66,35 +59,30 @@ for (file in files) {
       ri_row <- m[m$Protein == rii, ]
       lim <- c(lim, list(li_row))
       rim <- c(rim, list(ri_row))
-    } else if (lii %in% m$Protein &!(rii %in% m$Protein)) {
-      #print(paste("ligand", lii, "in m but receptor", rii, "not in matrix"))
-        next
-    } else if (rii %in% m$Protein &!(lii %in% m$Protein)) {
-      #print(paste("receptor", rii, "in m but ligand", lii, "not in matrix"))
-        next
-    } else {
-      #print(paste("ligand", lii, "and receptor", rii, "not in matrix"))
-        next
+    }
+    
+    # Check if lim or rim is empty
+    if (length(lim) > 0) {
+      # Create lim matrix
+      lim_values <- do.call(rbind, lapply(lim, function(x) as.matrix(x[, -1])))
+      rownames(lim_values) <- sapply(lim, function(x) x$Protein)
+      colnames(lim_values) <- 1:ncol(lim_values)
+      
+      # Add lim values to the list with protein name
+      all_lim_values <- c(all_lim_values, list(setNames(list(lim_values), lii)))
+    }
+    
+    if (length(rim) > 0) {
+      # Create rim matrix
+      rim_values <- do.call(rbind, lapply(rim, function(x) as.matrix(x[, -1])))
+      rownames(rim_values) <- sapply(rim, function(x) x$Protein)
+      colnames(rim_values) <- 1:ncol(rim_values)
+      
+      # Add rim values to the list with protein name
+      all_rim_values <- c(all_rim_values, list(setNames(list(rim_values), rii)))
     }
   }
-  
-  # Create lim and rim matrixes
-  lim_values <- do.call(rbind, lapply(lim, function(x) as.numeric(x[-1])))
-  rim_values <- do.call(rbind, lapply(rim, function(x) as.numeric(x[-1])))
-  
-  # Set the row names to the protein names
-  rownames(lim_values) <- sapply(lim, function(x) x$Protein)
-  rownames(rim_values) <- sapply(rim, function(x) x$Protein)
-  
-  # Set the column names to the sample names
-  colnames(lim_values) <- colnames(m)[2:ncol(m)]
-  colnames(rim_values) <- colnames(m)[2:ncol(m)]
-  
-  # Add lim and rim values to the lists
-  all_lim_values <- c(all_lim_values, list(lim_values))
-  all_rim_values <- c(all_rim_values, list(rim_values))
 }
-
 # Combine all lim and rim values into single matrices
 lim_values <- do.call(rbind, all_lim_values)
 rim_values <- do.call(rbind, all_rim_values)
