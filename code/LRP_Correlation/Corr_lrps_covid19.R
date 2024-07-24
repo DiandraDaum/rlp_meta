@@ -37,7 +37,8 @@ database <- read_xlsx("~/rlp_meta/results/alldb_at_least_2_counts_ligand.xlsx")
 
 #read proteomics matrix
 #dataset m = proteomics matrix: proteins rows, sample s columns.
-m <- read.csv("~/covid_data/ms_covid19_and_controls/babacic_2023_nat_comms_matrix.csv")
+#m <- read.csv("~/covid_data/ms_covid19_and_controls/babacic_2023_nat_comms_matrix.csv")
+m <- read.csv("~/covid_data/ms_covid19_and_controls/messner-Validation_2020_cellsystems_matrix.csv")
 colnames(m)[1] <- "Protein"
 
 
@@ -78,6 +79,7 @@ for (i in 1:length(l)) {
 # Extract the numeric elements from each inner list
 lim_values <- do.call(rbind, lapply(lim, function(x) as.numeric(x[-1])))
 rim_values <- do.call(rbind, lapply(rim, function(x) as.numeric(x[-1])))
+
 # Set the row names to the protein names
 rownames(lim_values) <- sapply(lim, function(x) x$Protein)
 rownames(rim_values) <- sapply(rim, function(x) x$Protein)
@@ -297,10 +299,11 @@ ggplot(filtered_results, aes(x = lrp, y = spearman_corr)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ggsave("/Users/diandra/rlp_meta/results/plots/LRPs_Spearman_correlation_adjusted_pvalue0.05_covid19.pdf", width = 8, height = 6, units = "in")
 
-
-#plot spearman results with both significant and non adjusted p-values
+# Calculate the number of significant and non-significant results
 n_significant <- sum(spearman_results$adjusted_p_value <= 0.05, na.rm = TRUE)
 n_not_significant <- sum(spearman_results$adjusted_p_value > 0.05, na.rm = TRUE)
+
+#plot spearman results with both significant and non adjusted p-values
 ggplot(spearman_results, aes(x = lrp, y = spearman_corr, color = factor(adjusted_p_value <= 0.05))) +
   geom_point() +
   scale_color_manual(values = c("TRUE" = "red", "FALSE" = "gray"),
@@ -318,6 +321,29 @@ ggplot(spearman_results, aes(x = lrp, y = spearman_corr, color = factor(adjusted
                   max.overlaps = 16, 
                   size = 2.5)
 ggsave("/Users/diandra/rlp_meta/results/plots/LRPs_Spearman_correlation_covid19.pdf", width = 8, height = 6, units = "in")
+
+
+# Create the volcano plot
+ggplot(spearman_results, aes(x = spearman_corr, y = -log10(adjusted_p_value))) +
+  geom_point(aes(color = interaction(factor(adjusted_p_value <= 0.05), factor(spearman_corr > 0)))) +
+  scale_color_manual(values = c("TRUE.TRUE" = "orange2", "TRUE.FALSE" = "dodgerblue3", "FALSE.TRUE" = "orange", "FALSE.FALSE" = "dodgerblue1"),
+                     breaks = c("TRUE.TRUE", "TRUE.FALSE", "FALSE.TRUE", "FALSE.FALSE"),
+                     labels = c(paste("<=0.05, + Corr (n = ", sum(spearman_results$adjusted_p_value <= 0.05 & spearman_results$spearman_corr > 0, na.rm = TRUE), ")", sep = ""),
+                                paste("<=0.05, - Corr (n = ", sum(spearman_results$adjusted_p_value <= 0.05 & spearman_results$spearman_corr < 0, na.rm = TRUE), ")", sep = ""),
+                                paste(">0.05, + Corr (n = ", sum(spearman_results$adjusted_p_value > 0.05 & spearman_results$spearman_corr > 0, na.rm = TRUE), ")", sep = ""),
+                                paste(">0.05, - Corr (n = ", sum(spearman_results$adjusted_p_value > 0.05 & spearman_results$spearman_corr < 0, na.rm = TRUE), ")", sep = ""))) +
+  labs(x = "Spearman Correlation", y = "-log10(Adjusted p-value)", color = "p-value & Correlation") +
+  theme_minimal() +
+  ggtitle("LRPs Spearman correlation") +
+  geom_text_repel(aes(label = lrp), 
+                  data = spearman_results %>% filter(adjusted_p_value <= 0.05), 
+                  min.segment.length = unit(0.1, "lines"), 
+                  segment.color = "gray", 
+                  max.overlaps = 16, 
+                  size = 2.5)
+ggsave("/Users/diandra/rlp_meta/results/plots/LRPs_Spearman_correlation_volcano_covid19.pdf", width = 8, height = 6, units = "in")
+
+
 #pearson plots------------------------------------------------------------------
 filtered_results2 <- subset(pearson_results, adjusted_p_value <= 0.05)
 # Create a scatter plot of the filtered results
@@ -352,5 +378,27 @@ ggplot(pearson_results, aes(x = lrp, y = pearson_corr, color = factor(adjusted_p
                   max.overlaps = 15, 
                   size = 2.5)
 ggsave("/Users/diandra/rlp_meta/results/plots/LRPs_Pearson_correlation_covid19.pdf", width = 8, height = 6, units = "in")
+
+
+# Create the volcano plot
+ggplot(pearson_results, aes(x = pearson_corr, y = -log10(adjusted_p_value))) +
+  geom_point(aes(color = interaction(factor(adjusted_p_value <= 0.05), factor(pearson_corr > 0)))) +
+  scale_color_manual(values = c("TRUE.TRUE" = "orange2", "TRUE.FALSE" = "royalblue", "FALSE.TRUE" = "orange", "FALSE.FALSE" = "royalblue1"),
+                     breaks = c("TRUE.TRUE", "TRUE.FALSE", "FALSE.TRUE", "FALSE.FALSE"),
+                     labels = c(paste("<=0.05, + Corr (n = ", sum(pearson_results$adjusted_p_value <= 0.05 & pearson_results$pearson_corr > 0, na.rm = TRUE), ")", sep = ""),
+                                paste("<=0.05, - Corr (n = ", sum(pearson_results$adjusted_p_value <= 0.05 & pearson_results$pearson_corr < 0, na.rm = TRUE), ")", sep = ""),
+                                paste(">0.05, + Corr (n = ", sum(pearson_results$adjusted_p_value > 0.05 & pearson_results$pearson_corr > 0, na.rm = TRUE), ")", sep = ""),
+                                paste(">0.05, - Corr (n = ", sum(pearson_results$adjusted_p_value > 0.05 & pearson_results$pearson_corr < 0, na.rm = TRUE), ")", sep = ""))) +
+  labs(x = "Pearson Correlation", y = "-log10(Adjusted p-value)", color = "p-value & Correlation") +
+  theme_minimal() +
+  ggtitle("LRPs Pearson correlation") +
+  geom_text_repel(aes(label = lrp), 
+                  data = pearson_results %>% filter(adjusted_p_value <= 0.05), 
+                  min.segment.length = unit(0.1, "lines"), 
+                  segment.color = "gray", 
+                  max.overlaps = 20, 
+                  size = 2.5)
+ggsave("/Users/diandra/rlp_meta/results/plots/LRPs_Pearson_correlation_volcano_covid19.pdf", width = 8, height = 6, units = "in")
+
 #-------------------------------------------------------------------------------
 
