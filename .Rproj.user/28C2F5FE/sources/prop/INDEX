@@ -20,6 +20,8 @@
 ~%2Frlp_meta%2Fcode%2FLRP_Correlation%2FClean_matrix%2FClean_ahern.R="C284E61B"
 ~%2Frlp_meta%2Fcode%2FLRP_Correlation%2FClean_matrix%2FClean_uniprot.R="089B15E9"
 ~%2Frlp_meta%2Fcode%2FLRP_Correlation%2FCorr_lrps.R="7D164821"
+~%2Frlp_meta%2Fcode%2FLRP_Correlation%2FCorr_lrps_covid19.R="C3ABEAC3"
+~%2Frlp_meta%2Fcode%2FLRP_Correlation%2FCorr_lrps_meta.R="4139B0E7"
 ~%2Frlp_meta%2Fcode%2FModify_CCIDB.R="4FA2C969"
 ~%2Frlp_meta%2Fcode%2FModify_Kirouac.R="BFBA148D"
 ~%2Frlp_meta%2Fcode%2FModify_Noel.R="013ABF73"
