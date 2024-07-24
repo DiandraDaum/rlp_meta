@@ -6,8 +6,8 @@ library(dplyr)
 library(stringr)
 library(writexl)
 
-data1 <- read_xlsx("/Users/diandra/rlp_meta/data/Toronto/Human-2019-Ximerakis-BaderLab-2017.xlsx")
-data2 <- read.table("/Users/diandra/rlp_meta/data/Toronto/protein_type_ximerakis.txt", header = TRUE, sep = "\t", encoding = "UTF-8")
+data1 <- read_xlsx("/Users/diandra/rlp_meta/data/BaderDB/Human-2019-Ximerakis-BaderLab-2017.xlsx")
+data2 <- read.table("/Users/diandra/rlp_meta/data/BaderDB/protein_type_ximerakis.txt", header = TRUE, sep = "\t", encoding = "UTF-8")
 
 
 # Create new columns in data1
@@ -31,11 +31,9 @@ data1$receptor <- NA
 # Define a function to determine ligand/receptor assignment
 assign_ligand_receptor <- function(alias_A, alias_B, alias_A_type, alias_B_type) {
   if (alias_A_type == alias_B_type) {
-    if (alias_A_type == "ECM" || alias_B_type == "ECM") {
-      return(c("-", "-"))
-    } else {
-      return(c("-", "-"))
-    }
+    return(c("-", "-"))
+  } else if (alias_A_type == "ECM" || alias_B_type == "ECM") {
+    return(c("-", "-"))
   } else if (grepl("Receptor", alias_A_type) && !grepl("Receptor", alias_B_type)) {
     return(c(alias_B, alias_A))
   } else if (grepl("Receptor", alias_B_type) && !grepl("Receptor", alias_A_type)) {
@@ -48,10 +46,6 @@ assign_ligand_receptor <- function(alias_A, alias_B, alias_A_type, alias_B_type)
     return(c(alias_A, alias_B))
   } else if (grepl("ECM/Receptor/Ligand", alias_B_type) && !grepl("Receptor", alias_A_type)) {
     return(c(alias_B, alias_A))
-  } else if (grepl("ECM", alias_A_type) && !grepl("Receptor", alias_B_type)) {
-    return(c(alias_B, alias_A))
-  } else if (grepl("ECM", alias_B_type) && !grepl("Receptor", alias_A_type)) {
-    return(c(alias_A, alias_B))
   } else if (grepl("Ligand", alias_A_type) && !grepl("Ligand", alias_B_type)) {
     return(c(alias_A, alias_B))
   } else if (grepl("Ligand", alias_B_type) && !grepl("Ligand", alias_A_type)) {
@@ -95,6 +89,7 @@ print(df_duplicates)
 write_xlsx(df_unique, "/Users/diandra/rlp_meta/data/new_files/Human-2019-Ximerakis-BaderLab-2017_new2.xlsx")
 
 #ONLY LR -----------------------------------------------------------------------
+#decide not to do this anymore
 library(readxl)
 library(writexl)
 df <- read_xlsx("/Users/diandra/rlp_meta/data/new_files/Human-2019-Ximerakis-BaderLab-2017_new2.xlsx")
