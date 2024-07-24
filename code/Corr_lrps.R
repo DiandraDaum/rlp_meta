@@ -10,6 +10,7 @@ library(writexl)
 #install.packages("fmsb")
 library(fmsb)
 library(ggplot2)
+library(stats)
 
 #read database
 database <- read_xlsx("~/rlp_meta/results/alldb_at_least_2_counts_ligand.xlsx")
@@ -223,6 +224,7 @@ for (i in 1:nrow(lim_values)) {
 spearman_results <- data.frame(lrp = rownames(spearman_corrs), 
                                spearman_corr = spearman_corrs[, 1], 
                                p_value = spearman_corrs[, 2], 
+                               adjusted_p_value = p.adjust(spearman_corrs[, 2], method = "fdr", n = length(spearman_corrs[, 2])),
                                CI_lower = spearman_corrs[, 3], 
                                CI_upper = spearman_corrs[, 4], 
                                Tot_sample_size = spearman_corrs[, 5])
@@ -231,7 +233,8 @@ rownames(spearman_results) <- 1:nrow(spearman_results)
 # Create pearson_results
 pearson_results <- data.frame(lrp = rownames(pearson_corrs), 
                               pearson_corr = pearson_corrs[, 1], 
-                              p_value = pearson_corrs[, 2], 
+                              p_value = pearson_corrs[, 2],
+                              adjusted_p_value= p.adjust(pearson_corrs[, 2], method = "fdr", n = length(pearson_corrs[, 2])),
                               CI_lower = pearson_corrs[, 3], 
                               CI_upper = pearson_corrs[, 4], 
                               Degree_of_freedom = pearson_corrs[, 5], 
@@ -240,8 +243,29 @@ rownames(pearson_results) <- 1:nrow(pearson_results)
 
 
 
-#plot results:
-ggplot(spearman_results, aes(x = 1:nrow(spearman_results), y = spearman_corr, label = paste("n_li =", n_li, ", n_ri =", n_ri))) + 
-  geom_point() + 
-  labs(x = "Ligand-Receptor Pairs", y = "Spearman Correlation Coefficient") + 
-  theme_classic()
+#plot only spearman significant adjusted p-values 
+filtered_results <- subset(spearman_results, adjusted_p_value <= 0.05)
+# Create a scatter plot of the filtered results
+ggplot(filtered_results, aes(x = lrp, y = spearman_corr, color = factor(adjusted_p_value <= 0.05))) +
+  geom_point() +
+  scale_color_manual(values = c("TRUE" = "red", "FALSE" = "gray")) +
+  labs(x = "LRP", y = "Spearman Correlation", color = "Significant P-Value") +
+  theme_minimal()
+
+#plot spearman results with both significant and non adjusted p-values
+library(tidyverse)
+library(ggplot2)
+spearman_results <- spearman_results %>% drop_na(lrp, spearman_corr, adjusted_p_value)
+n_significant <- sum(spearman_results$adjusted_p_value <= 0.05, na.rm = TRUE)
+n_not_significant <- sum(spearman_results$adjusted_p_value > 0.05, na.rm = TRUE)
+ggplot(spearman_results, aes(x = lrp, y = spearman_corr, color = factor(adjusted_p_value <= 0.05))) +
+  geom_point() +
+  scale_color_manual(values = c("TRUE" = "red", "FALSE" = "gray"),
+                     breaks = c("TRUE", "FALSE"),
+                     labels = c(paste("Significant (n =", n_significant, ")", sep = ""),
+                                paste("Not Significant (n =", n_not_significant, ")", sep = ""))) +
+  labs(x = "LRP", y = "Spearman Correlation", color = "Significant P-Value") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  scale_x_discrete(labels = ifelse(spearman_results$adjusted_p_value <= 0.05, spearman_results$lrp, ""))
+
