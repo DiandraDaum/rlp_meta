@@ -242,30 +242,86 @@ pearson_results <- data.frame(lrp = rownames(pearson_corrs),
 rownames(pearson_results) <- 1:nrow(pearson_results)
 
 
-
+#spearman plots--------------------------------------------------------------------------
+library(tidyverse)
+library(ggplot2)
+#BiocManager::install("ggrepel")
+library(ggrepel)
 #plot only spearman significant adjusted p-values 
 filtered_results <- subset(spearman_results, adjusted_p_value <= 0.05)
 # Create a scatter plot of the filtered results
-ggplot(filtered_results, aes(x = lrp, y = spearman_corr, color = factor(adjusted_p_value <= 0.05))) +
-  geom_point() +
-  scale_color_manual(values = c("TRUE" = "red", "FALSE" = "gray")) +
-  labs(x = "LRP", y = "Spearman Correlation", color = "Significant P-Value") +
-  theme_minimal()
+ggplot(filtered_results, aes(x = lrp, y = spearman_corr)) +
+  geom_point(color = "red") +
+  labs(x = "LRPs", y = "Spearman Correlation") +
+  ggtitle("LRPs Spearman correlation with adjusted p-value <=0.05")+
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 #plot spearman results with both significant and non adjusted p-values
-library(tidyverse)
-library(ggplot2)
-spearman_results <- spearman_results %>% drop_na(lrp, spearman_corr, adjusted_p_value)
 n_significant <- sum(spearman_results$adjusted_p_value <= 0.05, na.rm = TRUE)
 n_not_significant <- sum(spearman_results$adjusted_p_value > 0.05, na.rm = TRUE)
 ggplot(spearman_results, aes(x = lrp, y = spearman_corr, color = factor(adjusted_p_value <= 0.05))) +
   geom_point() +
   scale_color_manual(values = c("TRUE" = "red", "FALSE" = "gray"),
                      breaks = c("TRUE", "FALSE"),
-                     labels = c(paste("Significant (n =", n_significant, ")", sep = ""),
-                                paste("Not Significant (n =", n_not_significant, ")", sep = ""))) +
-  labs(x = "LRP", y = "Spearman Correlation", color = "Significant P-Value") +
+                     labels = c(paste("Significant (n = ", n_significant, ")", sep = ""),
+                                paste("Not Significant (n = ", n_not_significant, ")", sep = ""))) +
+  labs(x = "LRPs", y = "Spearman Correlation", color = "Significant adjusted P-Value") +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-  scale_x_discrete(labels = ifelse(spearman_results$adjusted_p_value <= 0.05, spearman_results$lrp, ""))
+  theme(axis.text.x = element_blank()) +
+  ggtitle("LRPs Spearman correlation") +
+  geom_text_repel(aes(label = lrp), 
+                  data = spearman_results %>% filter(adjusted_p_value <= 0.05), 
+                  min.segment.length = unit(0.1, "lines"), 
+                  segment.color = "gray", 
+                  max.overlaps = 11, 
+                  size = 3) 
+
+removed_rows <- spearman_results %>%
+  filter(lrp < min(lrp, na.rm = TRUE) | lrp > max(lrp, na.rm = TRUE) |
+           spearman_corr < min(spearman_corr, na.rm = TRUE) | spearman_corr > max(spearman_corr, na.rm = TRUE) |
+           is.na(lrp) | is.na(spearman_corr) | is.na(adjusted_p_value))
+
+# Print the removed rows
+print(removed_rows)
+
+#pearson plots------------------------------------------------------------------
+filtered_results2 <- subset(pearson_results, adjusted_p_value <= 0.05)
+# Create a scatter plot of the filtered results
+ggplot(filtered_results2, aes(x = lrp, y = pearson_corr)) +
+  geom_point(color = "red") +
+  labs(x = "LRPs", y = "Pearson Correlation") +
+  ggtitle("LRPs Pearson correlation with adjusted p-value <=0.05")+
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+#plot pearson results with both significant and non adjusted p-values
+# Find the rows that are being removed from the plot
+removed_rows <- pearson_results %>%
+  filter(lrp < min(lrp, na.rm = TRUE) | lrp > max(lrp, na.rm = TRUE) |
+           pearson_corr < min(pearson_corr, na.rm = TRUE) | pearson_corr > max(pearson_corr, na.rm = TRUE) |
+           is.na(lrp) | is.na(pearson_corr) | is.na(adjusted_p_value))
+
+# Print the removed rows
+print(removed_rows)
+#sumber of significan lrps
+n_significant2 <- sum(pearson_results$adjusted_p_value <= 0.05, na.rm = TRUE)
+n_not_significant2 <- sum(pearson_results$adjusted_p_value > 0.05, na.rm = TRUE)
+# Now you can plot your data
+ggplot(pearson_results, aes(x = lrp, y = pearson_corr, color = factor(adjusted_p_value <= 0.05))) +
+  geom_point() +
+  scale_color_manual(values = c("TRUE" = "red", "FALSE" = "gray"),
+                     breaks = c("TRUE", "FALSE"),
+                     labels = c(paste("Significant (n = ", n_significant2, ")", sep = ""),
+                                paste("Not Significant (n = ", n_not_significant2, ")", sep = ""))) +
+  labs(x = "LRPs", y = "Pearson Correlation", color = "Significant adjusted P-Value") +
+  theme_minimal() +
+  theme(axis.text.x = element_blank()) +
+  ggtitle("LRPs Pearson correlation") +
+  geom_text_repel(aes(label = lrp), 
+                  data = pearson_results %>% filter(adjusted_p_value <= 0.05), 
+                  min.segment.length = unit(0.1, "lines"), 
+                  segment.color = "gray", 
+                  max.overlaps = 11, 
+                  size = 3)
 
