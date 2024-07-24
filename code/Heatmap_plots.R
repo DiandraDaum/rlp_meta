@@ -43,12 +43,15 @@ for (i in 1:nrow(top_interactions)) {
 }
 
 # Remove row names from binary_matrix
-rownames(binary_matrix) <- substr(rownames(binary_matrix), 1, 10)
+rownames(binary_matrix) <- sub("([0-9]{2}).*$", "\\1", file_names)
+#file_pairs$file_num_truncated <- str_sub(file_pairs$file_num, 1, 10)
+#file_pairs$file_num_truncated <- sub("([0-9]{2}).*$", "\\1", file_pairs$file)
+#rownames(binary_matrix) <- substr(rownames(binary_matrix),"([0-9]{2}).*$", "\\1")
+  
 #print(rownames(binary_matrix))
 # Create a heatmap with a binary legend
 heatmap_plot <- heatmaply(t(binary_matrix), 
-                          col = c("lightblue", "pink"), 
-                          breaks = c(0, 1), 
+                          col = c("white", "black"), #breaks = c(0, 1), 
                           main = "Top 20 Interactions", 
                           xlab = "Files", 
                           ylab = "Interactions", 
@@ -57,16 +60,12 @@ heatmap_plot <- heatmaply(t(binary_matrix),
                           dendrogram = "both", 
                           k_row = 3, 
                           k_col = 3, 
-                          border = "black",
-                          ColSideColors = file_colors,
+                          border = "black", #ColSideColors = FALSE,
                           col_names = FALSE,
                           row_names=FALSE,
                           use_raster = TRUE,
                           raster_device = "pdf",
-                          legend = list(
-                              col = file_colors,
-                              lab = file_names
-                            )
+                          #legend = list(col = file_colors, lab = file_names)
                           )
 
 # Draw the heatmap
@@ -112,7 +111,7 @@ for (i in 1:nrow(top_interactions)) {
 }
 
 # Remove row names from binary_matrix
-rownames(binary_matrix) <- substr(rownames(binary_matrix), 1, 10)
+rownames(binary_matrix) <- sub("([0-9]{2}).*$", "\\1", file_names)
 
 library(plotly)
 # Create a heatmap with a binary legend

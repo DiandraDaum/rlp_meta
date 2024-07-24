@@ -28,7 +28,8 @@ file_pairs <- file_pairs %>%
   mutate(file_color = as.numeric(factor(file)))
 
 #cut file names
-file_pairs$file_num_truncated <- str_sub(file_pairs$file_num, 1, 10)
+#file_pairs$file_num_truncated <- str_sub(file_pairs$file_num, 1, 10)
+file_pairs$file_num_truncated <- sub("([0-9]{2}).*$", "\\1", file_pairs$file)
 
 # Reorder the file_num_truncated variable
 file_pairs <- file_pairs %>%
@@ -38,13 +39,13 @@ file_pairs <- file_pairs %>%
 p <- ggplot(file_pairs, aes(x = file_num_truncated, y = total_pairs, fill = factor(file_num_truncated))) + 
   geom_bar(stat = "identity") + 
   geom_text(aes(label = comma(total_pairs)), vjust = -0.5, size = 3) + 
-  labs(x = "DB files", y = "Total Number of lrps") + 
+  labs(x = "DB files", y = "Number of lrps") + 
   ggtitle("Ligand-receptor pairs in each dataset") + 
   theme_classic() + 
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) + 
-  scale_y_continuous(labels = comma, breaks = seq(0, total_pairs_in_file, by = 2000), limits = c(0, total_pairs_in_file * 1.05)) + 
-  annotate("text", x = 1, y = total_pairs_in_file * 0.99, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
+  scale_y_continuous(labels = comma, breaks = seq(0, max(file_pairs$total_pairs) + 2000, by = 2000), limits = c(0, max(file_pairs$total_pairs) + 2000)) + 
+  annotate("text", x = 1, y = max(file_pairs$total_pairs)+ 2000, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
 
 # Print the plot to the Plots pane in RStudio
 print(p)
@@ -83,7 +84,7 @@ file_pairs <- file_pairs %>%
   mutate(file_color = as.numeric(factor(file)))
 
 #cut file names
-file_pairs$file_num_truncated <- str_sub(file_pairs$file_num, 1, 10)
+file_pairs$file_num_truncated <- sub("([0-9]{2}).*$", "\\1", file_pairs$file)
 
 # Reorder the file_num_truncated variable
 file_pairs <- file_pairs %>%
@@ -98,8 +99,8 @@ p <- ggplot(file_pairs, aes(x = file_num_truncated, y = total_pairs, fill = fact
   theme_classic() + 
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) + 
-  scale_y_continuous(labels = comma, breaks = seq(0, total_pairs_in_file, by = 1000), limits = c(0, total_pairs_in_file * 1.05)) + 
-  annotate("text", x = 1, y = total_pairs_in_file * 0.99, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
+  scale_y_continuous(labels = comma, breaks = seq(0, max(file_pairs$total_pairs) + 1000, by = 1000), limits = c(0, max(file_pairs$total_pairs) + 1000)) + 
+  annotate("text", x = 1, y = max(file_pairs$total_pairs)+ 1000, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
 
 # Print the plot to the Plots pane in RStudio
 print(p)
@@ -138,7 +139,7 @@ file_pairs <- file_pairs %>%
   mutate(file_color = as.numeric(factor(file)))
 
 #cut file names
-file_pairs$file_num_truncated <- str_sub(file_pairs$file_num, 1, 10)
+file_pairs$file_num_truncated <- sub("([0-9]{2}).*$", "\\1", file_pairs$file)
 
 # Reorder the file_num_truncated variable
 file_pairs <- file_pairs %>%
@@ -153,8 +154,8 @@ p <- ggplot(file_pairs, aes(x = file_num_truncated, y = total_pairs, fill = fact
   theme_classic() + 
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) + 
-  scale_y_continuous(labels = comma, breaks = seq(0, total_pairs_in_file, by = 500), limits = c(0, total_pairs_in_file * 1.05)) + 
-  annotate("text", x = 1, y = total_pairs_in_file * 0.99, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
+  scale_y_continuous(labels = comma, breaks = seq(0, max(file_pairs$total_pairs) + 1000, by = 500), limits = c(0, max(file_pairs$total_pairs) + 1000)) + 
+  annotate("text", x = 1, y = max(file_pairs$total_pairs)+ 1000, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
 
 # Print the plot to the Plots pane in RStudio
 print(p)
@@ -190,7 +191,7 @@ file_pairs <- file_pairs %>%
   mutate(file_color = as.numeric(factor(file)))
 
 #cut file names
-file_pairs$file_num_truncated <- str_sub(file_pairs$file_num, 1, 10)
+file_pairs$file_num_truncated <- sub("([0-9]{2}).*$", "\\1", file_pairs$file)
 
 # Reorder the file_num_truncated variable
 file_pairs <- file_pairs %>%
@@ -205,8 +206,8 @@ p <- ggplot(file_pairs, aes(x = file_num_truncated, y = total_pairs, fill = fact
   theme_classic() + 
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) + 
-  scale_y_continuous(labels = comma, breaks = seq(0, total_pairs_in_file, by = 500), limits = c(0, total_pairs_in_file * 1.05)) + 
-  annotate("text", x = 1, y = total_pairs_in_file * 0.99, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
+  scale_y_continuous(labels = comma, breaks = seq(0, max(file_pairs$total_pairs) + 500, by = 500), limits = c(0, max(file_pairs$total_pairs) + 500)) + 
+  annotate("text", x = 1, y = max(file_pairs$total_pairs)+ 500, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
 
 # Print the plot to the Plots pane in RStudio
 print(p)
@@ -242,7 +243,7 @@ file_pairs <- file_pairs %>%
   mutate(file_color = as.numeric(factor(file)))
 
 #cut file names
-file_pairs$file_num_truncated <- str_sub(file_pairs$file_num, 1, 10)
+file_pairs$file_num_truncated <- sub("([0-9]{2}).*$", "\\1", file_pairs$file)
 
 # Reorder the file_num_truncated variable
 file_pairs <- file_pairs %>%
@@ -257,8 +258,8 @@ p <- ggplot(file_pairs, aes(x = file_num_truncated, y = total_pairs, fill = fact
   theme_classic() + 
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) + 
-  scale_y_continuous(labels = comma, breaks = seq(0, total_pairs_in_file, by = 250), limits = c(0, total_pairs_in_file * 1.05)) + 
-  annotate("text", x = 1, y = total_pairs_in_file * 0.99, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
+  scale_y_continuous(labels = comma, breaks = seq(0, max(file_pairs$total_pairs) + 500, by = 500), limits = c(0, max(file_pairs$total_pairs) + 500)) + 
+  annotate("text", x = 1, y = max(file_pairs$total_pairs)+ 500, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
 
 # Print the plot to the Plots pane in RStudio
 print(p)
