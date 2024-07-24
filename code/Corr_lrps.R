@@ -1,6 +1,6 @@
 #code to calculate correlation between lrps
 
-#load useful libraries
+#load useful libraries----------------------------------------------------------
 library(readxl)
 library(readr)
 library(dplyr)
@@ -12,13 +12,34 @@ library(fmsb)
 library(ggplot2)
 library(stats)
 
+#load data----------------------------------------------------------------------
 #read database
 database <- read_xlsx("~/rlp_meta/results/alldb_at_least_2_counts_ligand.xlsx")
 
+#m_folder_path <- "~/covid_data/clean_covid19"
+#ms <- dir(folder_path, pattern = "*.csv|*.txt|*.tsv|*.xlsx")
+#for (m in ms) {
+  # Read the m file
+  #m_path <- file.path(m_folder_path, file)
+  #if (grepl("\\.csv", file)) {
+    #df <- read_csv(m_file_path, show_col_types = FALSE)
+  #} else if (grepl("\\.txt", file)) {
+    #df <- read_table(m_file_path, show_col_types = FALSE)
+  #} else if (grepl("\\.tsv", file)) {
+    #df <- read_tsv(m_file_path, show_col_types = FALSE)
+  #} else if (grepl("\\.xlsx", file)) {
+    #df <- read_xlsx(m_file_path)
+  #} else {
+    # If the file extension is not recognized, skip it
+    #cat("The file", m, "cannot be read because it is not.csv or.txt or.tsv or.xlsx.\n")
+    #next
+  #}
+
 #read proteomics matrix
-#dataset m = proteomics matrix: proteins rows, sample s columns. 
+#dataset m = proteomics matrix: proteins rows, sample s columns.
 m <- read.csv("~/covid_data/ms_covid19_and_controls/babacic_2023_nat_comms_matrix.csv")
 colnames(m)[1] <- "Protein"
+
 
 #extracted lrps lists from database
 l <- as.list(database$ligand) #ligands list
@@ -53,35 +74,33 @@ for (i in 1:length(l)) {
   }
 }
 
-
+#create lim and rim matrixes
 # Extract the numeric elements from each inner list
 lim_values <- do.call(rbind, lapply(lim, function(x) as.numeric(x[-1])))
 rim_values <- do.call(rbind, lapply(rim, function(x) as.numeric(x[-1])))
-
 # Set the row names to the protein names
 rownames(lim_values) <- sapply(lim, function(x) x$Protein)
 rownames(rim_values) <- sapply(rim, function(x) x$Protein)
-
 # Set the column names to the sample names
 colnames(lim_values) <- colnames(m)[2:ncol(m)]
 colnames(rim_values) <- colnames(m)[2:ncol(m)]
+
+
 
 #n length = sample size
 #Minimal optimal sample size  (6?)
 n_li=length(lim)
 n_ri=length(rim)
-
-
 #n length = sample size
 #Minimal optimal sample size  (6?)
 na_li=length(lim_values)
 na_ri=length(rim_values)
 
-#correlation tests:
+#SPEARMAN correlation-----------------------------------------------------------
+#correlation tests:cor.test(x, y, method = “spearman”)
 #r=0; there is no relation between the variable. r=+1; perfectly positively correlated.
 #r=-1; perfectly negatively correlated. r= 0 to 0.30; negligible correlation.
 #r=0.30 to 0.50; moderate correlation. r=0.50 to 1 highly correlated.
-#SPEARMAN correlation: cor.test(x, y, method = “spearman”)
 #Parameters: x, y: numeric vectors with the same length
 #rs takes a value between -1 (negative association) and 1 (positive association).
 #rs = 0 means there is no association.
@@ -150,7 +169,7 @@ for (i in 1:nrow(lim_values)) {
   spearman_corrs[i, 6] <- x_corr
   spearman_corrs[i, 7] <- h_corr
 }
-#PEARSON correlation
+#PEARSON correlation------------------------------------------------------------
 #example: corr.one <- cor(data$x[data$category=="One"], data$y[data$category=="One"], method = 'pearson')
 #pearson_corr <- cor.test(lim, rim, method = 'pearson')
 pearson_corrs <- matrix(NA, nrow(lim_values), 8)
@@ -218,7 +237,8 @@ for (i in 1:nrow(lim_values)) {
   pearson_corrs[i, 8] <- h_corr
 }
 
-  
+
+#results------------------------------------------------------------------------
 #Store as result list in the beginning
 # Create spearman_results
 spearman_results <- data.frame(lrp = rownames(spearman_corrs), 
@@ -283,8 +303,8 @@ ggplot(spearman_results, aes(x = lrp, y = spearman_corr, color = factor(adjusted
   geom_point() +
   scale_color_manual(values = c("TRUE" = "red", "FALSE" = "gray"),
                      breaks = c("TRUE", "FALSE"),
-                     labels = c(paste("Significant (n = ", n_significant, ")", sep = ""),
-                                paste("Not Significant (n = ", n_not_significant, ")", sep = ""))) +
+                     labels = c(paste("<=0.05 (n = ", n_significant, ")", sep = ""),
+                                paste(">0.05 (n = ", n_not_significant, ")", sep = ""))) +
   labs(x = "LRPs", y = "Spearman Correlation", color = "Adjusted p-value") +
   theme_minimal() +
   theme(axis.text.x = element_blank()) +
@@ -314,8 +334,8 @@ ggplot(pearson_results, aes(x = lrp, y = pearson_corr, color = factor(adjusted_p
   geom_point() +
   scale_color_manual(values = c("TRUE" = "red", "FALSE" = "gray"),
                      breaks = c("TRUE", "FALSE"),
-                     labels = c(paste("Significant (n = ", n_significant2, ")", sep = ""),
-                                paste("Not Significant (n = ", n_not_significant2, ")", sep = ""))) +
+                     labels = c(paste("<=0.05 (n = ", n_significant2, ")", sep = ""),
+                                paste(">0.05 (n = ", n_not_significant2, ")", sep = ""))) +
   labs(x = "LRPs", y = "Pearson Correlation", color = "Adjusted p-value") +
   theme_minimal() +
   theme(axis.text.x = element_blank()) +
@@ -327,3 +347,4 @@ ggplot(pearson_results, aes(x = lrp, y = pearson_corr, color = factor(adjusted_p
                   max.overlaps = 15, 
                   size = 2.5)
 #-------------------------------------------------------------------------------
+
