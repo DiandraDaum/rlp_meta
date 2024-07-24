@@ -229,6 +229,15 @@ spearman_results <- data.frame(lrp = rownames(spearman_corrs),
                                CI_upper = spearman_corrs[, 4], 
                                Tot_sample_size = spearman_corrs[, 5])
 rownames(spearman_results) <- 1:nrow(spearman_results)
+# Remove rows with missing values
+removed_rows <- spearman_results %>%
+  filter(lrp < min(lrp, na.rm = TRUE) | lrp > max(lrp, na.rm = TRUE) |
+           spearman_corr < min(spearman_corr, na.rm = TRUE) | spearman_corr > max(spearman_corr, na.rm = TRUE) |
+           is.na(lrp) | is.na(spearman_corr) | is.na(adjusted_p_value))
+# Print the removed rows
+print(removed_rows)
+spearman_results <- spearman_results %>%
+  filter(!is.na(lrp) &!is.na(spearman_corr) &!is.na(adjusted_p_value))
 
 # Create pearson_results
 pearson_results <- data.frame(lrp = rownames(pearson_corrs), 
@@ -239,8 +248,18 @@ pearson_results <- data.frame(lrp = rownames(pearson_corrs),
                               CI_upper = pearson_corrs[, 4], 
                               Degree_of_freedom = pearson_corrs[, 5], 
                               Tot_sample_size = pearson_corrs[, 6])
-rownames(pearson_results) <- 1:nrow(pearson_results)
 
+# Find the rows that are being removed from the plot
+removed_rows <- pearson_results %>%
+  filter(lrp < min(lrp, na.rm = TRUE) | lrp > max(lrp, na.rm = TRUE) |
+           pearson_corr < min(pearson_corr, na.rm = TRUE) | pearson_corr > max(pearson_corr, na.rm = TRUE) |
+           is.na(lrp) | is.na(pearson_corr) | is.na(adjusted_p_value))
+# Print the removed rows
+print(removed_rows)
+rownames(pearson_results) <- 1:nrow(pearson_results)
+# Remove rows with missing values
+pearson_results <- pearson_results %>%
+  filter(!is.na(lrp) &!is.na(pearson_corr) &!is.na(adjusted_p_value))
 
 #spearman plots--------------------------------------------------------------------------
 library(tidyverse)
@@ -266,7 +285,7 @@ ggplot(spearman_results, aes(x = lrp, y = spearman_corr, color = factor(adjusted
                      breaks = c("TRUE", "FALSE"),
                      labels = c(paste("Significant (n = ", n_significant, ")", sep = ""),
                                 paste("Not Significant (n = ", n_not_significant, ")", sep = ""))) +
-  labs(x = "LRPs", y = "Spearman Correlation", color = "Significant adjusted P-Value") +
+  labs(x = "LRPs", y = "Spearman Correlation", color = "Adjusted p-value") +
   theme_minimal() +
   theme(axis.text.x = element_blank()) +
   ggtitle("LRPs Spearman correlation") +
@@ -274,17 +293,8 @@ ggplot(spearman_results, aes(x = lrp, y = spearman_corr, color = factor(adjusted
                   data = spearman_results %>% filter(adjusted_p_value <= 0.05), 
                   min.segment.length = unit(0.1, "lines"), 
                   segment.color = "gray", 
-                  max.overlaps = 11, 
-                  size = 3) 
-
-removed_rows <- spearman_results %>%
-  filter(lrp < min(lrp, na.rm = TRUE) | lrp > max(lrp, na.rm = TRUE) |
-           spearman_corr < min(spearman_corr, na.rm = TRUE) | spearman_corr > max(spearman_corr, na.rm = TRUE) |
-           is.na(lrp) | is.na(spearman_corr) | is.na(adjusted_p_value))
-
-# Print the removed rows
-print(removed_rows)
-
+                  max.overlaps = 16, 
+                  size = 2.5) 
 #pearson plots------------------------------------------------------------------
 filtered_results2 <- subset(pearson_results, adjusted_p_value <= 0.05)
 # Create a scatter plot of the filtered results
@@ -296,14 +306,6 @@ ggplot(filtered_results2, aes(x = lrp, y = pearson_corr)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 #plot pearson results with both significant and non adjusted p-values
-# Find the rows that are being removed from the plot
-removed_rows <- pearson_results %>%
-  filter(lrp < min(lrp, na.rm = TRUE) | lrp > max(lrp, na.rm = TRUE) |
-           pearson_corr < min(pearson_corr, na.rm = TRUE) | pearson_corr > max(pearson_corr, na.rm = TRUE) |
-           is.na(lrp) | is.na(pearson_corr) | is.na(adjusted_p_value))
-
-# Print the removed rows
-print(removed_rows)
 #sumber of significan lrps
 n_significant2 <- sum(pearson_results$adjusted_p_value <= 0.05, na.rm = TRUE)
 n_not_significant2 <- sum(pearson_results$adjusted_p_value > 0.05, na.rm = TRUE)
@@ -314,7 +316,7 @@ ggplot(pearson_results, aes(x = lrp, y = pearson_corr, color = factor(adjusted_p
                      breaks = c("TRUE", "FALSE"),
                      labels = c(paste("Significant (n = ", n_significant2, ")", sep = ""),
                                 paste("Not Significant (n = ", n_not_significant2, ")", sep = ""))) +
-  labs(x = "LRPs", y = "Pearson Correlation", color = "Significant adjusted P-Value") +
+  labs(x = "LRPs", y = "Pearson Correlation", color = "Adjusted p-value") +
   theme_minimal() +
   theme(axis.text.x = element_blank()) +
   ggtitle("LRPs Pearson correlation") +
@@ -322,6 +324,6 @@ ggplot(pearson_results, aes(x = lrp, y = pearson_corr, color = factor(adjusted_p
                   data = pearson_results %>% filter(adjusted_p_value <= 0.05), 
                   min.segment.length = unit(0.1, "lines"), 
                   segment.color = "gray", 
-                  max.overlaps = 11, 
-                  size = 3)
-
+                  max.overlaps = 15, 
+                  size = 2.5)
+#-------------------------------------------------------------------------------
