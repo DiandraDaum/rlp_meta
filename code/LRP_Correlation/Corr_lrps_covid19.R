@@ -37,8 +37,8 @@ database <- read_xlsx("~/rlp_meta/results/alldb_at_least_2_counts_ligand.xlsx")
 
 #read proteomics matrix
 #dataset m = proteomics matrix: proteins rows, sample s columns.
-#m <- read.csv("~/covid_data/ms_covid19_and_controls/babacic_2023_nat_comms_matrix.csv")
-m <- read.csv("~/covid_data/ms_covid19_and_controls/messner-Validation_2020_cellsystems_matrix.csv")
+m <- read.csv("~/covid_data/ms_covid19_and_controls/babacic_2023_nat_comms_matrix.csv")
+#m <- read.csv("~/covid_data/ms_covid19_and_controls/messner-Validation_2020_cellsystems_matrix.csv")
 colnames(m)[1] <- "Protein"
 
 
