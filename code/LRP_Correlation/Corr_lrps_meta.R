@@ -33,13 +33,11 @@ all_lim_values <- list()
 all_rim_values <- list()
 
 # Loop over each file in the folder
-# Loop over each file in the folder
 for (m in dir(m_folder_path, pattern = "*.csv")) {
   m_file_path <- file.path(m_folder_path, m)
   
   # Read the file
-  m <- read.csv(m_file_path)
-  colnames(m)[1] <- "Protein"
+  m <- read_csv(m_file_path, show_col_types = FALSE)
   
   # Remove rows with NA values in the Protein column
   m <- m[!is.na(m$Protein), ]
