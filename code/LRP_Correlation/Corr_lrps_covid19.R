@@ -16,25 +16,6 @@ library(stats)
 #read database
 database <- read_xlsx("~/rlp_meta/results/alldb_at_least_2_counts_ligand.xlsx")
 
-#m_folder_path <- "~/covid_data/clean_covid19"
-#ms <- dir(folder_path, pattern = "*.csv|*.txt|*.tsv|*.xlsx")
-#for (m in ms) {
-  # Read the m file
-  #m_path <- file.path(m_folder_path, file)
-  #if (grepl("\\.csv", file)) {
-    #df <- read_csv(m_file_path, show_col_types = FALSE)
-  #} else if (grepl("\\.txt", file)) {
-    #df <- read_table(m_file_path, show_col_types = FALSE)
-  #} else if (grepl("\\.tsv", file)) {
-    #df <- read_tsv(m_file_path, show_col_types = FALSE)
-  #} else if (grepl("\\.xlsx", file)) {
-    #df <- read_xlsx(m_file_path)
-  #} else {
-    # If the file extension is not recognized, skip it
-    #cat("The file", m, "cannot be read because it is not.csv or.txt or.tsv or.xlsx.\n")
-    #next
-  #}
-
 #read proteomics matrix
 #dataset m = proteomics matrix: proteins rows, sample s columns.
 m <- read.csv("~/covid_data/ms_covid19_and_controls/babacic_2023_nat_comms_matrix.csv")
