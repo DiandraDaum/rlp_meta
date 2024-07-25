@@ -234,7 +234,7 @@ ggplot(spearman_results, aes(x = spearman_corr, y = -log10(adjusted_p_value))) +
                   segment.color = "gray", 
                   max.overlaps = 55, 
                   size = 2.5)+
-  scale_y_continuous(breaks = c(0, 5, 10, 15, 30), limits = c(0, 31))+
+  scale_y_continuous(breaks = c(0, 5, 10, 15, 70), limits = c(0, 71))+
   geom_hline(yintercept = -log10(0.05), linetype = "dotted", color = "red")
 ggsave("/Users/diandra/rlp_meta/results/plots/LRPs_Spearman_correlation_volcano_meta.pdf", width = 8, height = 6, units = "in")
 
