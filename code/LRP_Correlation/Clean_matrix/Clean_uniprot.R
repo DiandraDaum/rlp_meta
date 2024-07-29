@@ -38,11 +38,6 @@ m$Protein <- getBM(attributes=c("hgnc_symbol","ensembl_gene_id","entrezgene_id")
 # Write the updated matrix to a new CSV file
 write.csv(m, file="~/covid_data/ms_covid19_and_controls/Clean_matrix/byeon_2022_matrix_gene_symbols.csv", row.names=FALSE)
 
-
-
-
-
-
 #modify suvarna-----------------------------------------------------------------
 # assume 'df' is your matrix
 df <- read.csv("~/covid_data/ms_covid19_and_controls/suvarna_2021_frontiers_in_physiology_matrix.csv")
@@ -78,6 +73,7 @@ df <- df[!is.na(df[, 1]), ]
 colnames(df)[1] <- "Protein"
 # save the cleaned matrix
 write.csv(df, "~/covid_data/ms_covid19_and_controls/To_clean/suvarna_2021_frontiers_in_physiology_matrix_new.csv", row.names = FALSE)
+
 
 
 
