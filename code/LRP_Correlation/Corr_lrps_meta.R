@@ -27,7 +27,7 @@ output_file_path <- "/Users/diandra/rlp_meta/results/spearman_results_meta.csv" 
 
 
 # Get a list of files in the folder
-m_folder_path <- "~/covid_data/ms_covid19_and_controls/Clean_matrix/try"
+m_folder_path <- "~/covid_data/ms_covid19_and_controls/Clean_matrix"
 
 
 
@@ -201,6 +201,8 @@ spearman_results <- spearman_results %>%
   filter(!is.na(lrp) &!is.na(spearman_corr) &!is.na(adjusted_p_value))
 write.csv(spearman_results, output_file_path, row.names = FALSE)
 
+
+
 #spearman plots--------------------------------------------------------------------------
 library(tidyverse)
 library(ggplot2)
@@ -209,6 +211,7 @@ library(ggrepel)
 
 #plot only spearman significant adjusted p-values 
 filtered_results <- subset(spearman_results, adjusted_p_value <= 0.05)
+filtered_results <- subset(spearman_results, (spearman_corr>=0.5 | spearman_corr<=-0.5))
 # Remove duplicates, keeping the row with the highest adjusted_p_value
 filtered_results <- filtered_results[!duplicated(filtered_results$lrp, fromLast = TRUE) |
                                        duplicated(filtered_results$lrp) & 
@@ -238,9 +241,9 @@ ggplot(spearman_results, aes(x = spearman_corr, y = -log10(adjusted_p_value))) +
                   data = filtered_results, 
                   min.segment.length = unit(0.1, "lines"), 
                   segment.color = "gray", 
-                  max.overlaps = 55, 
+                  max.overlaps = 30, 
                   size = 2.5)+
-  scale_y_continuous(breaks = c(0, 5, 10, 15, 50, 70), limits = c(0, 71))+
+  scale_y_continuous(breaks = c(0, 2.5, 5, 6), limits = c(0, 6))+
   geom_hline(yintercept = -log10(0.05), linetype = "dotted", color = "red")
 ggsave("/Users/diandra/rlp_meta/results/plots/LRPs_Spearman_correlation_volcano_meta.pdf", width = 8, height = 6, units = "in")
 
