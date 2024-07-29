@@ -11,7 +11,8 @@ library(ggplot2)
 library(stats)
 
 # Load data
-database <- read_xlsx("~/rlp_meta/results/alldb_at_least_2_counts_ligand.xlsx")
+#top2 lrps with at least a count of 2
+database <- read_xlsx("~/rlp_meta/results/alldb_top2_ligand.xlsx")
 
 # Extracted lrps lists from database
 l <- as.list(database$ligand) # ligands list
@@ -21,9 +22,14 @@ r <- as.list(database$`receptor(s)`) # receptors list
 spearman_results <- data.frame(rlp = character(), spearman_corr = character(), 
                                n_li = character(), n_ri = character(), na_li = character(), na_ri = character())
 #pearson_results <- data.frame(rlp = character(), pearson_corr = character(), n_li = character(), n_ri = character(), na_li = character(), na_ri = character())
+# save spearman_results as csv
+output_file_path <- "/Users/diandra/rlp_meta/results/spearman_results_meta.csv" #csv output
+
 
 # Get a list of files in the folder
 m_folder_path <- "~/covid_data/ms_covid19_and_controls/Clean_matrix/try"
+
+
 
 # Initialize lists to store lim and rim values
 # Loop over each file in the folder
@@ -148,12 +154,12 @@ for (i in 1:nrow(lim_values)) {
   ok_tot_li <-!is.na(li_values)
   ok_tot_ri <-!is.na(ri_values)
   ok_tot <- ok_tot_li & ok_tot_ri
-  if (sum(ok_tot) >= 2) {
+  if (sum(ok_tot) >= 6) {
     corr_test <- cor.test(li_values[ok_tot], ri_values[ok_tot], method = "spearman")
     corr_test2 <- spearman.ci.sas(li_values[ok_tot], ri_values[ok_tot], adj.bias=TRUE, conf.level=0.95)
     spearman_corr <- corr_test$estimate
     p_value <- corr_test$p.value
-    tot_sample_size <- sum(ok_tot)
+    tot_sample_size <- min(length (li_values[ok_tot]), length (ri_values[ok_tot]))
     ci_lower <- corr_test2$rho.ll
     ci_upper <- corr_test2$rho.ul
   } else {
@@ -193,7 +199,7 @@ removed_rows <- spearman_results %>%
 print(removed_rows)
 spearman_results <- spearman_results %>%
   filter(!is.na(lrp) &!is.na(spearman_corr) &!is.na(adjusted_p_value))
-
+write.csv(spearman_results, output_file_path, row.names = FALSE)
 
 #spearman plots--------------------------------------------------------------------------
 library(tidyverse)
@@ -234,7 +240,7 @@ ggplot(spearman_results, aes(x = spearman_corr, y = -log10(adjusted_p_value))) +
                   segment.color = "gray", 
                   max.overlaps = 55, 
                   size = 2.5)+
-  scale_y_continuous(breaks = c(0, 5, 10, 15, 70), limits = c(0, 71))+
+  scale_y_continuous(breaks = c(0, 5, 10, 15, 50, 70), limits = c(0, 71))+
   geom_hline(yintercept = -log10(0.05), linetype = "dotted", color = "red")
 ggsave("/Users/diandra/rlp_meta/results/plots/LRPs_Spearman_correlation_volcano_meta.pdf", width = 8, height = 6, units = "in")
 
