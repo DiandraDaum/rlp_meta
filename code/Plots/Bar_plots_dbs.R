@@ -45,7 +45,8 @@ p <- ggplot(file_pairs, aes(x = file_num_truncated, y = total_pairs, fill = fact
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) + 
   scale_y_continuous(labels = comma, breaks = seq(0, max(file_pairs$total_pairs) + 2000, by = 2000), limits = c(0, max(file_pairs$total_pairs) + 2000)) + 
-  annotate("text", x = 1, y = max(file_pairs$total_pairs)+ 2000, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
+  annotate("text", x = 1, y = max(file_pairs$total_pairs)+ 2000, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)+
+  geom_hline(yintercept = max(file_pairs$total_pairs) , linetype = "dotted", color = "red")
 
 # Print the plot to the Plots pane in RStudio
 print(p)
@@ -100,7 +101,8 @@ p <- ggplot(file_pairs, aes(x = file_num_truncated, y = total_pairs, fill = fact
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) + 
   scale_y_continuous(labels = comma, breaks = seq(0, max(file_pairs$total_pairs) + 1000, by = 1000), limits = c(0, max(file_pairs$total_pairs) + 1000)) + 
-  annotate("text", x = 1, y = max(file_pairs$total_pairs)+ 1000, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
+  annotate("text", x = 1, y = max(file_pairs$total_pairs)+ 1000, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)+
+  geom_hline(yintercept = max(file_pairs$total_pairs) , linetype = "dotted", color = "red")
 
 # Print the plot to the Plots pane in RStudio
 print(p)
@@ -155,7 +157,8 @@ p <- ggplot(file_pairs, aes(x = file_num_truncated, y = total_pairs, fill = fact
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) + 
   scale_y_continuous(labels = comma, breaks = seq(0, max(file_pairs$total_pairs) + 1000, by = 500), limits = c(0, max(file_pairs$total_pairs) + 1000)) + 
-  annotate("text", x = 1, y = max(file_pairs$total_pairs)+ 1000, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
+  annotate("text", x = 1, y = max(file_pairs$total_pairs)+ 1000, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)+
+  geom_hline(yintercept = max(file_pairs$total_pairs) , linetype = "dotted", color = "red")
 
 # Print the plot to the Plots pane in RStudio
 print(p)
@@ -207,7 +210,8 @@ p <- ggplot(file_pairs, aes(x = file_num_truncated, y = total_pairs, fill = fact
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) + 
   scale_y_continuous(labels = comma, breaks = seq(0, max(file_pairs$total_pairs) + 500, by = 500), limits = c(0, max(file_pairs$total_pairs) + 500)) + 
-  annotate("text", x = 1, y = max(file_pairs$total_pairs)+ 500, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
+  annotate("text", x = 1, y = max(file_pairs$total_pairs)+ 500, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)+
+  geom_hline(yintercept = max(file_pairs$total_pairs) , linetype = "dotted", color = "red")
 
 # Print the plot to the Plots pane in RStudio
 print(p)
@@ -259,7 +263,8 @@ p <- ggplot(file_pairs, aes(x = file_num_truncated, y = total_pairs, fill = fact
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 45, hjust = 1, size = 8)) + 
   scale_y_continuous(labels = comma, breaks = seq(0, max(file_pairs$total_pairs) + 500, by = 500), limits = c(0, max(file_pairs$total_pairs) + 500)) + 
-  annotate("text", x = 1, y = max(file_pairs$total_pairs)+ 500, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)
+  annotate("text", x = 1, y = max(file_pairs$total_pairs)+ 500, label = paste0("Total lrps: ", comma(total_pairs_in_file)), hjust = 0, vjust = 1)+
+  geom_hline(yintercept = max(file_pairs$total_pairs) , linetype = "dotted", color = "red")
 
 # Print the plot to the Plots pane in RStudio
 print(p)
