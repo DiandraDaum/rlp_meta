@@ -12,7 +12,7 @@ library(stats)
 
 # Load data
 #top2 lrps with at least a count of 2
-database <- read_xlsx("~/rlp_meta/results/alldb_top2_ligand.xlsx")
+database <- read_xlsx("~/rlp_meta/results/alldb_top3_ligand.xlsx")
 
 # Extracted lrps lists from database
 l <- as.list(database$ligand) # ligands list
@@ -201,7 +201,8 @@ spearman_results <- spearman_results %>%
   filter(!is.na(lrp) &!is.na(spearman_corr) &!is.na(adjusted_p_value))
 write.csv(spearman_results, output_file_path, row.names = FALSE)
 #1,553 entries with 1 olink
-#1,956 entries with 2 olinks
+#1,956 entries with 2 olinks: 748 unique lrps with alldb_top2_ligand.xlsx
+# 2,468 entries with 2 olinks: 944 unique lrps with alldb_top3_ligand.xlsx
 
 #spearman plots--------------------------------------------------------------------------
 library(tidyverse)
