@@ -200,8 +200,8 @@ print(removed_rows)
 spearman_results <- spearman_results %>%
   filter(!is.na(lrp) &!is.na(spearman_corr) &!is.na(adjusted_p_value))
 write.csv(spearman_results, output_file_path, row.names = FALSE)
-
-
+#1,553 entries with 1 olink
+#1,956 entries with 2 olinks
 
 #spearman plots--------------------------------------------------------------------------
 library(tidyverse)
@@ -210,8 +210,8 @@ library(ggplot2)
 library(ggrepel)
 
 #plot only spearman significant adjusted p-values 
-filtered_results <- subset(spearman_results, adjusted_p_value <= 0.05)
 filtered_results <- subset(spearman_results, (spearman_corr>=0.5 | spearman_corr<=-0.5))
+filtered_results <- subset(filtered_results, adjusted_p_value <= 0.05)
 # Remove duplicates, keeping the row with the highest adjusted_p_value
 filtered_results <- filtered_results[!duplicated(filtered_results$lrp, fromLast = TRUE) |
                                        duplicated(filtered_results$lrp) & 
@@ -241,9 +241,9 @@ ggplot(spearman_results, aes(x = spearman_corr, y = -log10(adjusted_p_value))) +
                   data = filtered_results, 
                   min.segment.length = unit(0.1, "lines"), 
                   segment.color = "gray", 
-                  max.overlaps = 30, 
+                  max.overlaps = 40, 
                   size = 2.5)+
-  scale_y_continuous(breaks = c(0, 2.5, 5, 6), limits = c(0, 6))+
+  scale_y_continuous(breaks = c(0, 2.5, 5, 7.5, 10), limits = c(0, 10))+
   geom_hline(yintercept = -log10(0.05), linetype = "dotted", color = "red")
 ggsave("/Users/diandra/rlp_meta/results/plots/LRPs_Spearman_correlation_volcano_meta.pdf", width = 8, height = 6, units = "in")
 
