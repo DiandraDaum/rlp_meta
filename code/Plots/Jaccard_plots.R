@@ -13,9 +13,9 @@ library(gridExtra)
 
 #jaccard matrix names-----------------------------------------------------------------
 # Read the xlsx output file
-#results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
+results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
 #results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull_count2.xlsx")
-results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull_count3.xlsx")
+#results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull_count3.xlsx")
 
 # Extract the file names from the "file" column
 file_names <- results_distinct$file %>%
@@ -93,9 +93,207 @@ jaccard_plot <- ggplot(jaccard_df_long, aes(x = Var1, y = Var2, fill = value, la
 print(jaccard_plot)
 
 # Save the plot as a PDF
-#ggsave("/Users/diandra/rlp_meta/results/plots/Jaccard_plot_new.pdf", plot = jaccard_plot, width = 8, height = 6, units = "in", dpi = 300)
+ggsave("/Users/diandra/rlp_meta/results/plots/Jaccard_plot_new.pdf", plot = jaccard_plot, width = 8, height = 6, units = "in", dpi = 300)
 #ggsave("/Users/diandra/rlp_meta/results/plots/Jaccard_plot_new2.pdf", plot = jaccard_plot, width = 8, height = 6, units = "in", dpi = 300)
-ggsave("/Users/diandra/rlp_meta/results/plots/Jaccard_plot_new3.pdf", plot = jaccard_plot, width = 8, height = 6, units = "in", dpi = 300)
+#ggsave("/Users/diandra/rlp_meta/results/plots/Jaccard_plot_new3.pdf", plot = jaccard_plot, width = 8, height = 6, units = "in", dpi = 300)
+
+
+
+
+#try clustering ward.D2---------------------------------------------------------------
+library(readxl)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+library(vegan) # for vegdist function
+library(RColorBrewer)
+library(gridExtra)
+
+# Read the xlsx output file
+#results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
+results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull_count2.xlsx")
+#results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull_count3.xlsx")
+
+# Extract the file names from the "file" column
+file_names <- results_distinct$file %>%
+  str_split("; ") %>%
+  unlist() %>%
+  unique() %>%
+  sort()
+
+# Create a binary matrix to store the interaction data
+binary_matrix <- matrix(0, nrow = length(file_names), ncol = nrow(results_distinct))
+colnames(binary_matrix) <- 1:nrow(results_distinct)
+rownames(binary_matrix) <- file_names
+
+# Populate the binary matrix with interaction data
+for (i in 1:nrow(results_distinct)) {
+  files <- results_distinct$file[i] %>%
+    str_split("; ") %>%
+    unlist()
+  for (j in 1:length(files)) {
+    binary_matrix[which(file_names == files[j]), i] <- 1
+  }
+}
+
+# Calculate the Jaccard index
+jaccard_matrix <- matrix(0, nrow = length(file_names), ncol = length(file_names))
+colnames(jaccard_matrix) <- file_names
+rownames(jaccard_matrix) <- file_names
+
+for (i in 1:nrow(jaccard_matrix)) {
+  for (j in 1:ncol(jaccard_matrix)) {
+    intersection <- sum(binary_matrix[i, ] & binary_matrix[j, ])
+    union <- sum(binary_matrix[i, ] | binary_matrix[j, ])
+    jaccard_matrix[i, j] <- intersection / union
+  }
+}
+
+# Calculate the distance between each pair of files
+distance_matrix <- 1 - jaccard_matrix
+
+# Perform hierarchical clustering
+hc <- hclust(as.dist(distance_matrix), method = "ward.D2")
+
+# Reorder the rows and columns of the Jaccard matrix based on the clustering
+jaccard_matrix <- jaccard_df[hc$order, hc$order]
+
+# Convert the Jaccard matrix to a data frame
+jaccard_df <- as.data.frame(as.matrix(jaccard_matrix))
+colnames(jaccard_df) <- file_names[hc$order]
+rownames(jaccard_df) <- file_names[hc$order]
+
+# Create the jaccard_df_long data frame with clustering information
+jaccard_df_long <- jaccard_df %>%
+  rownames_to_column("Var1") %>%
+  gather(Var2, value, -Var1) %>%
+  mutate(Var1 = factor(Var1, levels = file_names[hc$order]),
+         Var2 = factor(Var2, levels = file_names[hc$order]))
+
+#cut the file names in a constant way
+jaccard_df_long$Var1 <- sub("([0-9]{2}).*$", "\\1", jaccard_df_long$Var1)
+jaccard_df_long$Var2 <- sub("([0-9]{2}).*$", "\\1", jaccard_df_long$Var2)
+
+# Set the correct order for Var1 and Var2
+jaccard_df_long$Var1 <- factor(jaccard_df_long$Var1, levels = unique(jaccard_df_long$Var1)[order(match(unique(jaccard_df_long$Var1), file_names[hc$order]))])
+jaccard_df_long$Var2 <- factor(jaccard_df_long$Var2, levels = unique(jaccard_df_long$Var2)[order(match(unique(jaccard_df_long$Var2), file_names[hc$order]))])
+
+# Create the heatmap
+jaccard_plot <- ggplot(jaccard_df_long, aes(x = Var1, y = Var2, fill = value, label = round(value, 2))) + 
+  geom_tile() + 
+  geom_text(size = 2.5) + 
+  scale_fill_gradient(low = "royalblue2", high = "yellow", name = "Jaccard Index") + 
+  theme_minimal() + 
+  labs(x = "File", y = "File") + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  theme(axis.text.y = element_text(angle = 0, hjust = 1)) + 
+  theme(panel.grid.major = element_line(linewidth = 0.5, linetype = "solid", colour = "black")) + 
+  theme(legend.position = "right")
+
+# Print the heatmap
+print(jaccard_plot)
+
+# Save the plot as a PDF
+#ggsave("/Users/diandra/rlp_meta/results/plots/Jaccard_plot_clustered_ward.D2.pdf", plot = jaccard_plot, width = 8, height = 6, units = "in", dpi = 300)
+ggsave("/Users/diandra/rlp_meta/results/plots/Jaccard_plot2_clustered_ward.D2.pdf", plot = jaccard_plot, width = 8, height = 6, units = "in", dpi = 300)
+#ggsave("/Users/diandra/rlp_meta/results/plots/Jaccard_plot3_clustered_ward.D2.pdf", plot = jaccard_plot, width = 8, height = 6, units = "in", dpi = 300)
+
+
+#Try2 clustering mcquitty---------------------------------------------------------
+library(readxl)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+library(vegan) # for vegdist function
+library(RColorBrewer)
+library(gridExtra)
+
+# Read the xlsx output file
+results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
+
+# Extract the file names from the "file" column
+file_names <- results_distinct$file %>%
+  str_split("; ") %>%
+  unlist() %>%
+  unique() %>%
+  sort()
+
+# Create a binary matrix to store the interaction data
+binary_matrix <- matrix(0, nrow = length(file_names), ncol = nrow(results_distinct))
+colnames(binary_matrix) <- 1:nrow(results_distinct)
+rownames(binary_matrix) <- file_names
+
+# Populate the binary matrix with interaction data
+for (i in 1:nrow(results_distinct)) {
+  files <- results_distinct$file[i] %>%
+    str_split("; ") %>%
+    unlist()
+  for (j in 1:length(files)) {
+    binary_matrix[which(file_names == files[j]), i] <- 1
+  }
+}
+
+# Calculate the Jaccard index
+jaccard_matrix <- matrix(0, nrow = length(file_names), ncol = length(file_names))
+colnames(jaccard_matrix) <- file_names
+rownames(jaccard_matrix) <- file_names
+
+for (i in 1:nrow(jaccard_matrix)) {
+  for (j in 1:ncol(jaccard_matrix)) {
+    intersection <- sum(binary_matrix[i, ] & binary_matrix[j, ])
+    union <- sum(binary_matrix[i, ] | binary_matrix[j, ])
+    jaccard_matrix[i, j] <- intersection / union
+  }
+}
+
+# Calculate the distance between each pair of files
+distance_matrix <- 1 - jaccard_matrix
+
+# Perform hierarchical clustering
+hc <- hclust(as.dist(distance_matrix), method = "mcquitty")
+
+# Reorder the rows and columns of the Jaccard matrix based on the clustering
+jaccard_matrix <- jaccard_df[hc$order, hc$order]
+
+# Convert the Jaccard matrix to a data frame
+jaccard_df <- as.data.frame(as.matrix(jaccard_matrix))
+colnames(jaccard_df) <- file_names[hc$order]
+rownames(jaccard_df) <- file_names[hc$order]
+
+# Create the jaccard_df_long data frame with clustering information
+jaccard_df_long <- jaccard_df %>%
+  rownames_to_column("Var1") %>%
+  gather(Var2, value, -Var1) %>%
+  mutate(Var1 = factor(Var1, levels = file_names[hc$order]),
+         Var2 = factor(Var2, levels = file_names[hc$order]))
+
+#cut the file names in a constant way
+jaccard_df_long$Var1 <- sub("([0-9]{2}).*$", "\\1", jaccard_df_long$Var1)
+jaccard_df_long$Var2 <- sub("([0-9]{2}).*$", "\\1", jaccard_df_long$Var2)
+
+# Set the correct order for Var1 and Var2
+jaccard_df_long$Var1 <- factor(jaccard_df_long$Var1, levels = unique(jaccard_df_long$Var1)[order(match(unique(jaccard_df_long$Var1), file_names[hc$order]))])
+jaccard_df_long$Var2 <- factor(jaccard_df_long$Var2, levels = unique(jaccard_df_long$Var2)[order(match(unique(jaccard_df_long$Var2), file_names[hc$order]))])
+
+# Create the heatmap
+jaccard_plot <- ggplot(jaccard_df_long, aes(x = Var1, y = Var2, fill = value, label = round(value, 2))) + 
+  geom_tile() + 
+  geom_text(size = 2.5) + 
+  scale_fill_gradient(low = "royalblue2", high = "yellow", name = "Jaccard Index") + 
+  theme_minimal() + 
+  labs(x = "File", y = "File") + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  theme(axis.text.y = element_text(angle = 0, hjust = 1)) + 
+  theme(panel.grid.major = element_line(linewidth = 0.5, linetype = "solid", colour = "black")) + 
+  theme(legend.position = "right")
+
+# Print the heatmap
+print(jaccard_plot)
+
+# Save the plot as a PDF
+ggsave("/Users/diandra/rlp_meta/results/plots/Jaccard_plot_clustered_mcquitty.pdf", plot = jaccard_plot, width = 8, height = 6, units = "in", dpi = 300)
 
 
 
