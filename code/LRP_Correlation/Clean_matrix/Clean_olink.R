@@ -37,3 +37,31 @@ matrix_data_wide <- matrix_data %>%
 
 # Write the updated matrix to a new CSV file
 write.csv(matrix_data_wide, file="~/covid_data/olink_cancer/Clean_olink/pancancer_olink_data_biostudies_v2_new.csv", row.names=FALSE)
+
+
+#modify next-gen covid19--------------------------------------------------------
+library(dplyr)
+library(readxl)
+library(writexl)
+library(tibble)
+
+# Load the xlsx file
+df <- read_xlsx("~/covid_data/olink_cardiovascular/Zhong_next_gen_covid19.xlsx")
+
+# Remove the "Visit" column
+df <- df[, -2]
+
+# Remove the first row (which is now the first column)
+df <- df[-1, ]
+
+# Transpose the data (switch columns and rows)
+df <- as.data.frame(t(df))
+colnames(df)[1] <- "Protein"
+# Remove the first row (which is now the first column)
+df <- df[-1, ]
+
+# Write the updated matrix to a new CSV file
+write.csv(df, file="~/covid_data/olink_cancer/Clean_olink/Zhong_next_gen_covid19_new.csv", row.names=FALSE)
+
+
+
