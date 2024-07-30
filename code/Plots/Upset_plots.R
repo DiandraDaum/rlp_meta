@@ -10,8 +10,8 @@ library(scales)
 library(UpSetR) #https://doi.org/10.1093/bioinformatics/btx364
 
 # Read the xlsx output file
-#results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
-results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull_count2.xlsx")
+results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
+#results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull_count2.xlsx")
 
 # Extract the file names from the "file" column
 file_names <- results_distinct$file %>%
@@ -35,7 +35,8 @@ for (i in 1:nrow(results_distinct)) {
 binary_df <- as.data.frame(binary_matrix)
 
 # Cut the file names
-colnames(binary_df) <- substr(colnames(binary_df), 1, 10)
+#colnames(binary_df) <- substr(colnames(binary_df), 1, 10)
+colnames(binary_df) <- sub("([0-9]{2}).*$", "\\1", colnames(binary_df))
 
 # Create the upset plot
 upset_plot <- upset(binary_df, 
@@ -51,8 +52,8 @@ upset_plot <- upset(binary_df,
 print(upset_plot)
 
 # Save the plot as a PDF
-#pdf("/Users/diandra/rlp_meta/results/plots/upset_plot.pdf", width = 8, height = 6)
-pdf("/Users/diandra/rlp_meta/results/plots/upset_plot2.pdf", width = 8, height = 6)
+pdf("/Users/diandra/rlp_meta/results/plots/upset_plot.pdf", width = 8, height = 6)
+#pdf("/Users/diandra/rlp_meta/results/plots/upset_plot2.pdf", width = 8, height = 6)
 print(upset_plot)
 dev.off()
 
