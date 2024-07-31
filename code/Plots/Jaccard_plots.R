@@ -81,7 +81,7 @@ jaccard_df_long$Var2 <- sapply(jaccard_df_long$Var2, shorten_file_names)
 jaccard_plot <- ggplot(jaccard_df_long, aes(x = Var1, y = Var2, fill = value, label = round(value, 2))) + 
   geom_tile() + 
   geom_text(size = 2.5) + 
-  scale_fill_gradient(low = "royalblue2", high = "yellow", name = "Jaccard Index") + 
+  scale_fill_gradient(low = "lightcyan1", high = "coral1", name = "Jaccard Index") + 
   theme_minimal() + 
   labs(x = "File", y = "File") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
@@ -190,7 +190,7 @@ jaccard_df_long$Var2 <- factor(jaccard_df_long$Var2, levels = unique(jaccard_df_
 jaccard_plot <- ggplot(jaccard_df_long, aes(x = Var1, y = Var2, fill = value, label = round(value, 2))) + 
   geom_tile() + 
   geom_text(size = 2.5) + 
-  scale_fill_gradient(low = "royalblue2", high = "yellow", name = "Jaccard Index") + 
+  scale_fill_gradient(low = "lightcyan", high = "coral", name = "Jaccard Index") + 
   theme_minimal() + 
   labs(x = "File", y = "File") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
@@ -295,7 +295,7 @@ jaccard_df_long$Var2 <- factor(jaccard_df_long$Var2, levels = unique(jaccard_df_
 jaccard_plot2 <- ggplot(jaccard_df_long, aes(x = Var1, y = Var2, fill = value, label = round(value, 2))) + 
   geom_tile() + 
   geom_text(size = 2.5) + 
-  scale_fill_gradient(low = "royalblue2", high = "yellow", name = "Jaccard Index") + 
+  scale_fill_gradient(low = "lightcyan", high = "coral", name = "Jaccard Index") + 
   theme_minimal() + 
   labs(x = "File", y = "File") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
@@ -396,7 +396,7 @@ jaccard_df_long$Var2 <- factor(jaccard_df_long$Var2, levels = unique(jaccard_df_
 jaccard_plot3 <- ggplot(jaccard_df_long, aes(x = Var1, y = Var2, fill = value, label = round(value, 2))) + 
   geom_tile() + 
   geom_text(size = 2.5) + 
-  scale_fill_gradient(low = "royalblue2", high = "yellow", name = "Jaccard Index") + 
+  scale_fill_gradient(low = "lightcyan", high = "coral", name = "Jaccard Index") + 
   theme_minimal() + 
   labs(x = "File", y = "File") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
@@ -435,9 +435,9 @@ print(paste("Mean difference between Jaccard matrix 1 and 3: ", mean_diff_1_3))
 #% sharing names------------------------------------------------------------------
 #code to obtain a % matrix of sharing interaction pairs between the files that were use to create the input file:
 # Read the xlsx output file
-#results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
+results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
 #results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull_count2.xlsx")
-results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull_count3.xlsx")
+#results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull_count3.xlsx")
 
 # Extract the file names from the "file" column
 file_names <- results_distinct$file %>%
@@ -519,7 +519,7 @@ percent_shared_df_long$Var1 <- factor(percent_shared_df_long$Var1,
 heatmap_plot <- ggplot(percent_shared_df_long, aes(x = Var1, y = Var2, fill = value, label = round(value, 2))) + 
   geom_tile() + 
   geom_text(size = 2) + 
-  scale_fill_gradient(low = "royalblue2", high = "yellow", name = "% Shared lrps") + 
+  scale_fill_gradient(low = "white", high = "orchid4", name = "% Shared lrps") + 
   theme_minimal() + 
   labs(x = "File", y = "File") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
@@ -531,7 +531,7 @@ heatmap_plot <- ggplot(percent_shared_df_long, aes(x = Var1, y = Var2, fill = va
 print(heatmap_plot)
 
 # Save the plot as a PDF
-#ggsave("/Users/diandra/rlp_meta/results/plots/Percent_Shared_plot_new.pdf", plot = heatmap_plot, width = 8, height = 6, units = "in", dpi = 300)
+ggsave("/Users/diandra/rlp_meta/results/plots/Percent_Shared_plot_new.pdf", plot = heatmap_plot, width = 8, height = 6, units = "in", dpi = 300)
 #ggsave("/Users/diandra/rlp_meta/results/plots/Percent_Shared_plot_new2.pdf", plot = heatmap_plot, width = 8, height = 6, units = "in", dpi = 300)
-ggsave("/Users/diandra/rlp_meta/results/plots/Percent_Shared_plot_new3.pdf", plot = heatmap_plot, width = 8, height = 6, units = "in", dpi = 300)
+#ggsave("/Users/diandra/rlp_meta/results/plots/Percent_Shared_plot_new3.pdf", plot = heatmap_plot, width = 8, height = 6, units = "in", dpi = 300)
 
