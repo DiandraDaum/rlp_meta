@@ -48,9 +48,18 @@ meta_analysis_results <- lapply(lrp_groups, function(x) {
 meta_analysis_results <- do.call(rbind, meta_analysis_results)
 
 #trial forest plot for A2M_LRP1-------------------------------------------------------
-MA_A2M_LRP1 <- metacor(spearman_results$spearman_corr[grep("A2M_LRP1", metaanalysis_results$lrp)], 
-                       spearman_results$Tot_sample_size[grep("A2M_LRP1", metaanalysis_results$lrp)], 
-                        studlab =sub("([0-9]{4}).*$", "\\1", spearman_results$file[grep("A2M_LRP1", spearman_results$lrp)]))
+#metacor of A2M_LRP1 lrp correlations and sample sizes
+MA_A2M_LRP1 <- metacor(cor = spearman_results$spearman_corr[grep("A2M_LRP1", spearman_results$lrp)], 
+                       n = spearman_results$Tot_sample_size[grep("A2M_LRP1",spearman_results$lrp)], 
+                       studlab = sub("([0-9]{4}).*$", "\\1", spearman_results$file[grep("A2M_LRP1", spearman_results$lrp)]), 
+                       fixed = FALSE,
+                       random = TRUE,
+                       method.tau = "REML",
+                       method.random.ci = "HK",
+                       title = "A2M_LRP1 correlation meta_analysis")
+summary(MA_A2M_LRP1)
+
+#forest plot
 forest(MA_A2M_LRP1,
        sortvar=TE,
        smlab="A2M_LRP1 Correlation",
@@ -59,10 +68,32 @@ forest(MA_A2M_LRP1,
        print.tau2 = FALSE,
        xlim = c(-1, 1),
        )
-
 pdf(file = "~/rlp_meta/results/plots/forestplot_A2M_LRP1.pdf", width = 8, height = 7)
 dev.off()
 
+
+#funnel plot
+# Define fill colors for contour
+col.contour = c("steelblue1", "lightskyblue1", "lightcyan1")
+
+# Generate funnel plot (to not include study labels #studlab = TRUE)
+meta::funnel(MA_A2M_LRP1,
+             xlim = c(-0.5, 2),
+             studlab = TRUE,
+             contour = c(0.9, 0.95, 0.99),
+             col.contour = col.contour)
+# Add a legend
+legend(x = 1.6, y = 0.01, 
+       legend = c("p < 0.1", "p < 0.05", "p < 0.01"),
+       fill = col.contour)
+# Add a title
+title("Funnel Plot (A2M_LRP1 correlation meta_analysis)")
+
+#try update: cannot find update
+MA_A2M_LRP <- update.meta(MA_A2M_LRP, prediction = TRUE)
+summary(MA_A2M_LRP)
+
+#store resutls: different CI values?
 A2M_LRP1_results <- data.frame(lrp = "A2M_LRP1", 
                                    Tot_sample_size = MA_A2M_LRP1$n,
                                    TE=MA_A2M_LRP1$TE,
@@ -73,7 +104,7 @@ A2M_LRP1_results <- data.frame(lrp = "A2M_LRP1",
                                    CI_upper_95 =MA_A2M_LRP1$upper,
                                    file=spearman_results$file[grep("A2M_LRP1", spearman_results$lrp)])
 
-#loop
+#loop---------------------------------------------------------------------------
 library(readxl)
 library(readr)
 library(dplyr)
@@ -87,10 +118,10 @@ library(meta)
 
 spearman_results <- read.csv("~/rlp_meta/results/spearman_results_meta.csv")
 
-# Filter ligand-receptor pairs with at least 2 occurrences
+# Filter ligand-receptor pairs with at least 4 occurrences
 filtered_results <- spearman_results %>%
   group_by(lrp) %>%
-  filter(n() >= 4)
+  filter(n() >= 2)
 
 # Create a list to store the meta-analysis results
 meta_results <- list()
@@ -103,7 +134,12 @@ for (lrp in unique(filtered_results$lrp)) {
   lrp_data$study_label <- sub("([0-9]{4}).*$", "\\1", lrp_data$file)
   MA <- metacor(lrp_data$spearman_corr, 
                 lrp_data$Tot_sample_size, 
-                studlab = lrp_data$study_label)
+                studlab = lrp_data$study_label,
+                fixed = FALSE,
+                random = TRUE,
+                method.tau = "REML",
+                method.random.ci = "HK",
+                title = paste0(lrp," correlation meta_analysis"))
   
   # Store the result in the list
   meta_results[[lrp]] <- MA
@@ -115,7 +151,9 @@ dir.create("~/rlp_meta/results/plots/forest", showWarnings = FALSE)
 # Loop through each meta-analysis result and create a forest plot
 for (lrp in names(meta_results)) {
   # Check if at least 2 correlations are significant
-  if (sum(meta_results[[lrp]]$pval < 0.05) >= 2) {
+  #if ((meta_results[[lrp]]$pval.Q < 0.05) && ((meta_results[[lrp]]$TE.random >= 0.5) || (meta_results[[lrp]]$TE.random <= 0.5))) {
+  #if ((meta_results[[lrp]]$pval.Q < 0.05) & ((meta_results[[lrp]]$upper.random - meta_results[[lrp]]$lower.random) > 0)) {
+  if ((meta_results[[lrp]]$pval.Q < 0.05) & !((meta_results[[lrp]]$lower.random <= 0) & (meta_results[[lrp]]$upper.random >= 0))) {
     # Create the forest plot
     forest(meta_results[[lrp]],
            sortvar = TE,
@@ -124,11 +162,32 @@ for (lrp in names(meta_results)) {
            prediction = TRUE, 
            print.tau2 = FALSE,
            xlim = c(-1, 1),
+           col.diamond = "steelblue1"
     )
     
     # Save the plot as a PDF
     pdf(file = paste0("~/rlp_meta/results/plots/forest/forestplot_", lrp, ".pdf"), width = 8, height = 7)
     dev.off()
+    
+    #funnel plot
+    # Define fill colors for contour
+    col.contour = c("steelblue1", "lightskyblue1", "lightcyan1")
+    
+    # Generate funnel plot (to not include study labels #studlab = TRUE)
+    meta::funnel(meta_results[[lrp]],
+                 xlim = c(-0.5, 2),
+                 studlab = TRUE,
+                 contour = c(0.9, 0.95, 0.99),
+                 col.contour = col.contour)
+    # Add a legend
+    legend(x = 1.6, y = 0.01, 
+           legend = c("p < 0.1", "p < 0.05", "p < 0.01"),
+           fill = col.contour)
+    # Add a title
+    title(paste0("Funnel Plot: correlation meta_analysis ", lrp))
+    # Save the plot as a PDF
+    pdf(file = paste0("~/rlp_meta/results/plots/forest/funnelplot_", lrp, ".pdf"), width = 8, height = 7)
+    dev.off()  
   }
 }
 
