@@ -63,5 +63,52 @@ df <- df[-1, ]
 # Write the updated matrix to a new CSV file
 write.csv(df, file="~/covid_data/olink_cancer/Clean_olink/Zhong_next_gen_covid19_new.csv", row.names=FALSE)
 
+#
 
 
+
+#modify Longitudinal proteomic analysis of severe COVID-19----------------------
+library(dplyr)
+library(readxl)
+library(writexl)
+library(tibble)
+
+# Load the xlsx file
+a <- read_xlsx("~/covid_data/olink_cardiovascular/2ALongitudinal_proteomic_analysis_of_severeCOVID-19.xlsx")
+c <- read_xlsx("~/covid_data/olink_cardiovascular/2CLongitudinal_proteomic_analysis_of_severeCOVID-19.xlsx")
+# Rename the columns using the second row
+colnames(a) <- a[1, ]
+# Remove the first row
+a <- a[-1, ]
+# Rename the columns using the second row
+colnames(c) <- c[1, ]
+# Remove the first row
+c <- c[-1, ]
+
+# Create a lookup table for Olink IDs to UniProt IDs
+olink_to_uniprot <- setNames(a$UniProt, a$OlinkID)
+
+# Replace Olink IDs with UniProt IDs in column headers of c
+colnames(c)[-1] <- olink_to_uniprot[colnames(c)[-1]]
+
+# Transpose c, keeping the UniProt IDs as a column
+c_transposed <- t(c)
+
+# Replace the column names with the first row
+colnames(c_transposed) <- c_transposed[1, ]
+
+# Remove the first row
+c_transposed <- c_transposed[-1, ]
+
+# Add the UniProt IDs as a column
+c_transposed <- data.frame(UniProt = rownames(c_transposed), c_transposed)
+colnames(c_transposed)[1] <- "Protein"
+
+library(org.Hs.eg.db)
+# Convert the Uniprot IDs to gene symbols
+c_transposed$Protein <- mapIds(org.Hs.eg.db, keys=c_transposed$Protein, column="SYMBOL", keytype="UNIPROT", multiVals="first")
+c_transposed$Protein[is.na(c_transposed$Protein)] <- c_transposed$Protein[is.na(c_transposed$Protein)]
+
+
+write.csv(a, file="~/covid_data/olink_cardiovascular/2ALongitudinal_proteomic_analysis_of_severeCOVID-19.csv", row.names=FALSE)
+write.csv(c_transposed, file="~/covid_data/olink_cancer/Clean_olink/2CLongitudinal_proteomic_analysis_of_severeCOVID-19_new.csv", row.names=FALSE)
