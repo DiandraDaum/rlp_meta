@@ -60,15 +60,15 @@ MA_A2M_LRP1 <- metacor(cor = spearman_results$spearman_corr[grep("A2M_LRP1", spe
 summary(MA_A2M_LRP1)
 
 #forest plot
+pdf(file = "~/rlp_meta/results/plots/forestplot_A2M_LRP1.pdf", width = 15, height = 6)
 forest(MA_A2M_LRP1,
        sortvar=TE,
        smlab="A2M_LRP1 Correlation",
-       leftlabs = c("Study", "TE", "seTE"),
+       leftlabs = c("Study", "Observations"),
        prediction = TRUE, 
        print.tau2 = FALSE,
        xlim = c(-1, 1),
        )
-pdf(file = "~/rlp_meta/results/plots/forestplot_A2M_LRP1.pdf", width = 8, height = 7)
 dev.off()
 
 
@@ -129,7 +129,8 @@ meta_results <- list()
 # Loop through each ligand-receptor pair
 for (lrp in unique(filtered_results$lrp)) {
   # Filter the data for the current ligand-receptor pair
-  lrp_data <- filtered_results %>% filter(lrp == !!lrp)
+  lrp_data <- filtered_results %>% 
+                  filter(lrp == !!lrp)
   
   lrp_data$study_label <- sub("([0-9]{4}).*$", "\\1", lrp_data$file)
   MA <- metacor(lrp_data$spearman_corr, 
@@ -153,26 +154,25 @@ for (lrp in names(meta_results)) {
   # Check if at least 2 correlations are significant
   #if ((meta_results[[lrp]]$pval.Q < 0.05) && ((meta_results[[lrp]]$TE.random >= 0.5) || (meta_results[[lrp]]$TE.random <= 0.5))) {
   #if ((meta_results[[lrp]]$pval.Q < 0.05) & ((meta_results[[lrp]]$upper.random - meta_results[[lrp]]$lower.random) > 0)) {
-  if ((meta_results[[lrp]]$pval.Q < 0.05) & !((meta_results[[lrp]]$lower.random <= 0) & (meta_results[[lrp]]$upper.random >= 0))) {
+  if ((meta_results[[lrp]]$pval.random < 0.05) & !((meta_results[[lrp]]$lower.random <= 0) & (meta_results[[lrp]]$upper.random >= 0))) {
     # Create the forest plot
+    pdf(file = paste0("~/rlp_meta/results/plots/forest/forestplot_", lrp, ".pdf"), width = 10, height = 6)
     forest(meta_results[[lrp]],
            sortvar = TE,
            smlab = paste0(lrp, " Correlation"),
-           leftlabs = c("Study", "TE", "seTE"),
+           leftlabs = c("Study", "Observations"),
            prediction = TRUE, 
            print.tau2 = FALSE,
            xlim = c(-1, 1),
            col.diamond = "steelblue1"
     )
-    
     # Save the plot as a PDF
-    pdf(file = paste0("~/rlp_meta/results/plots/forest/forestplot_", lrp, ".pdf"), width = 8, height = 7)
     dev.off()
     
     #funnel plot
+    pdf(file = paste0("~/rlp_meta/results/plots/forest/funnelplot_", lrp, ".pdf"), width = 10, height = 10)
     # Define fill colors for contour
     col.contour = c("steelblue1", "lightskyblue1", "lightcyan1")
-    
     # Generate funnel plot (to not include study labels #studlab = TRUE)
     meta::funnel(meta_results[[lrp]],
                  xlim = c(-0.5, 2),
@@ -186,8 +186,11 @@ for (lrp in names(meta_results)) {
     # Add a title
     title(paste0("Funnel Plot: correlation meta_analysis ", lrp))
     # Save the plot as a PDF
-    pdf(file = paste0("~/rlp_meta/results/plots/forest/funnelplot_", lrp, ".pdf"), width = 8, height = 7)
     dev.off()  
+    
+    if ((meta_results[[lrp]]$TE.random >= 0.5) | (meta_results[[lrp]]$TE.random <= -0.5)){
+      cat("lrp: ", lrp, ", TE.random: ", meta_results[[lrp]]$TE.random, "\n")
+    }
   }
 }
 
