@@ -63,8 +63,6 @@ df <- df[-1, ]
 # Write the updated matrix to a new CSV file
 write.csv(df, file="~/covid_data/olink_cancer/Clean_olink/Zhong_next_gen_covid19_new.csv", row.names=FALSE)
 
-#
-
 
 
 #modify Longitudinal proteomic analysis of severe COVID-19----------------------
@@ -112,3 +110,72 @@ c_transposed$Protein[is.na(c_transposed$Protein)] <- c_transposed$Protein[is.na(
 
 write.csv(a, file="~/covid_data/olink_cardiovascular/2ALongitudinal_proteomic_analysis_of_severeCOVID-19.csv", row.names=FALSE)
 write.csv(c_transposed, file="~/covid_data/olink_cancer/Clean_olink/2CLongitudinal_proteomic_analysis_of_severeCOVID-19_new.csv", row.names=FALSE)
+
+#convert multgi-platform--------------------------------------------------------
+library(dplyr)
+library(readxl)
+library(writexl)
+library(tibble)
+
+# Load the xlsx file
+df <- read_xlsx("~/covid_data/olink_cancer/Multi-platform_Ovarian_Cancer_Plasma.xlsx")
+
+#convert to csv
+write.csv(df, file="~/covid_data/olink_cancer/Clean_olink/Multi-platform_Ovarian_Cancer_Plasma_new.csv", row.names=FALSE)
+
+
+
+
+
+#clean petrera------------------------------------------------------------------
+library(dplyr)
+library(readxl)
+library(writexl)
+library(tibble)
+
+# Load the xlsx file
+df <- read_xlsx("~/covid_data/olink_cardiovascular/Petrera20.xlsx", skip = 4)
+# Get the column names that meet the condition
+col_names <- which(str_detect(names(df), "ONCOLOGY|CARDIOVASCULAR"))
+
+# Select the first column and the columns that meet the condition
+df <- df[, c(1, col_names)]
+
+# Remove rows with specific values in the first column
+df <- df %>%
+  filter(!is.na(.[[1]])) %>%
+  filter(.[[1]] != "Assay") %>%
+  filter(.[[1]] != "OlinkID")
+
+# Remove the last two rows
+df <- head(df, -2)
+
+# Set the first row as column names
+colnames(df) <- df[1, ]
+df <- df[-1, ]
+
+# Transpose df, keeping the column 1 as a column
+df_transposed <- t(df)
+
+# Replace the column names with the first row
+colnames(df_transposed) <- df_transposed[1, ]
+
+# Remove the first row
+df_transposed <- df_transposed[-1, ]
+
+# Add the original column headers as a column
+df_transposed <- data.frame(Column1 = colnames(df)[-1], df_transposed)
+colnames(df_transposed)[1] <- "Protein"
+
+library(org.Hs.eg.db)
+# Convert the Uniprot IDs to gene symbols
+df_transposed$Protein <- mapIds(org.Hs.eg.db, keys=df_transposed$Protein, column="SYMBOL", keytype="UNIPROT", multiVals="first")
+df_transposed$Protein[is.na(df_transposed$Protein)] <- df_transposed$Protein[is.na(df_transposed$Protein)]
+
+#convert to csv
+write.csv(df_transposed, file="~/covid_data/olink_cancer/Clean_olink/Petrera20_new.csv", row.names=FALSE)
+
+
+
+
+
