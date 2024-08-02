@@ -82,7 +82,8 @@ library(readr)
 library(xlsx)
 library(org.Hs.eg.db)
 
-folder_path <- "~/covid_data/ms_covid19_and_controls/To_clean"
+#folder_path <- "~/covid_data/ms_covid19_and_controls/To_clean"
+folder_path <- "~/covid_data/olink_cancer/Clean_olink/try"
 output_folder_path <- "~/covid_data/ms_covid19_and_controls/Clean_matrix"
 files <- dir(folder_path, pattern = "*.csv|*.txt|*.tsv|*.xlsx")
 

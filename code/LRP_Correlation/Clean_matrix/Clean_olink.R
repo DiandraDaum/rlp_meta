@@ -129,6 +129,7 @@ write.csv(df, file="~/covid_data/olink_cancer/Clean_olink/Multi-platform_Ovarian
 
 #clean petrera------------------------------------------------------------------
 library(dplyr)
+library(stringr)
 library(readxl)
 library(writexl)
 library(tibble)
@@ -147,8 +148,8 @@ df <- df %>%
   filter(.[[1]] != "Assay") %>%
   filter(.[[1]] != "OlinkID")
 
-# Remove the last two rows
-df <- head(df, -2)
+# Remove the last four rows
+df <- head(df, -4)
 
 # Set the first row as column names
 colnames(df) <- df[1, ]
@@ -164,19 +165,37 @@ colnames(df_transposed) <- df_transposed[1, ]
 df_transposed <- df_transposed[-1, ]
 
 # Add the original column headers as a column
-df_transposed <- data.frame(Column1 = colnames(df)[-1], df_transposed)
+df_transposed <- data.frame(Column1 = rownames(df_transposed), df_transposed)
 colnames(df_transposed)[1] <- "Protein"
-
-library(org.Hs.eg.db)
-# Convert the Uniprot IDs to gene symbols
-df_transposed$Protein <- mapIds(org.Hs.eg.db, keys=df_transposed$Protein, column="SYMBOL", keytype="UNIPROT", multiVals="first")
-df_transposed$Protein[is.na(df_transposed$Protein)] <- df_transposed$Protein[is.na(df_transposed$Protein)]
-
+df_transposed <- head(df_transposed, -8)
 
 #convert to csv
 write.csv(df_transposed, file="~/covid_data/olink_cancer/Clean_olink/Petrera20_new.csv", row.names=FALSE)
 
+#open again
+m <- read.csv("~/covid_data/olink_cancer/Clean_olink/Petrera20_new.csv")
 
+# Remove the last two rows
+#m <- head(m, -8)
 
-
+# Filter out rows with ;, NA, or NULL in the Protein column
+#m <- m %>% filter(!str_detect(Protein, ",")) %>% filter(!is.na(Protein))
+m <- m %>%
+  filter(!str_detect(m$Protein, ","))
+         
+library(org.Hs.eg.db)
+protein_map <- mapIds(org.Hs.eg.db, keys=m$Protein, column="SYMBOL", keytype="UNIPROT", multiVals="first")
+m$Protein <- as.character(protein_map)
+m <- m %>%
+  filter(!is.na(m$Protein)) %>%
+  filter(!is.null(m$Protein))
+#m$Protein <- as.character(m$Protein)
+# Convert the Uniprot IDs to gene symbols
+#new_id <-  mapIds(org.Hs.eg.db, keys=m$Protein, column="SYMBOL", keytype="UNIPROT", multiVals="first")
+#remove NULL values
+#m <-m[!unlist(lapply(new_id, is.null)), ]
+#m$Protein <- as.character(unlist(new_id))
+#save
+write.csv(m, file="~/covid_data/olink_cancer/Clean_olink/Petrera20_new.csv", row.names=FALSE)
+write_xlsx(m, "~/covid_data/olink_cancer/Clean_olink/Petrera20_new.xlsx")
 
