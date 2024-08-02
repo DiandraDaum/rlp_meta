@@ -172,6 +172,7 @@ library(org.Hs.eg.db)
 df_transposed$Protein <- mapIds(org.Hs.eg.db, keys=df_transposed$Protein, column="SYMBOL", keytype="UNIPROT", multiVals="first")
 df_transposed$Protein[is.na(df_transposed$Protein)] <- df_transposed$Protein[is.na(df_transposed$Protein)]
 
+
 #convert to csv
 write.csv(df_transposed, file="~/covid_data/olink_cancer/Clean_olink/Petrera20_new.csv", row.names=FALSE)
 
