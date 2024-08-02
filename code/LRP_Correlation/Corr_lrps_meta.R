@@ -203,6 +203,7 @@ write.csv(spearman_results, output_file_path, row.names = FALSE)
 #1,553 entries with 1 olink
 #1,956 entries with 2 olinks: 748 unique lrps with alldb_top2_ligand.xlsx
 # 2,468 entries with 2 olinks: 944 unique lrps with alldb_top3_ligand.xlsx
+#2,571 entries with 4 olinks: 948 unique lrps with alldb_top3_ligand.xlsx
 
 #spearman plots--------------------------------------------------------------------------
 library(tidyverse)
