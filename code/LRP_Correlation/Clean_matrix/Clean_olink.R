@@ -169,26 +169,44 @@ df_transposed <- data.frame(Column1 = rownames(df_transposed), df_transposed)
 colnames(df_transposed)[1] <- "Protein"
 df_transposed <- head(df_transposed, -8)
 
+# Remove rows where the value in the "Protein" column is NA, NULL, or has more than 8 characters
+df_transposed <- df_transposed %>%
+  filter(!is.na(Protein), 
+         !is.null(Protein), 
+         nchar(as.character(Protein)) <= 8)
+
 #convert to csv
 write.csv(df_transposed, file="~/covid_data/olink_cancer/Clean_olink/Petrera20_new.csv", row.names=FALSE)
 
 #open again
 m <- read.csv("~/covid_data/olink_cancer/Clean_olink/Petrera20_new.csv")
-
 # Remove the last two rows
 #m <- head(m, -8)
+# Create a copy of the original data frame
+m_original <- m
 
+# Perform the filter operation
+m <- m %>%
+  filter(!is.na(m$Protein)) %>%
+  filter(!is.null(m$Protein))%>%
+  filter(!str_detect(Protein, ","))
+
+# Find the removed rows
+removed_rows <- setdiff(m_original$Protein, m$Protein)
+
+# Print the removed rows
+print(removed_rows)
+setdiff(m_original$Protein, m$Protein) #NA in row 109
+#m <- m_original
 # Filter out rows with ;, NA, or NULL in the Protein column
 #m <- m %>% filter(!str_detect(Protein, ",")) %>% filter(!is.na(Protein))
-m <- m %>%
-  filter(!str_detect(m$Protein, ","))
+#m <- m %>% filter(!str_detect(m$Protein, ","))#%>% filter(!is.na(m$Protein))
          
 library(org.Hs.eg.db)
 protein_map <- mapIds(org.Hs.eg.db, keys=m$Protein, column="SYMBOL", keytype="UNIPROT", multiVals="first")
 m$Protein <- as.character(protein_map)
-m <- m %>%
-  filter(!is.na(m$Protein)) %>%
-  filter(!is.null(m$Protein))
+m <- as.data.frame(m)
+#m <- as.matrix(m)
 #m$Protein <- as.character(m$Protein)
 # Convert the Uniprot IDs to gene symbols
 #new_id <-  mapIds(org.Hs.eg.db, keys=m$Protein, column="SYMBOL", keytype="UNIPROT", multiVals="first")
