@@ -10,6 +10,8 @@ library(ggplot2)
 library(vegan) # for vegdist function
 library(RColorBrewer)
 library(gridExtra)
+library(viridis)
+library(tibble)
 
 #jaccard matrix names-----------------------------------------------------------------
 # Read the xlsx output file
@@ -109,6 +111,8 @@ library(ggplot2)
 library(vegan) # for vegdist function
 library(RColorBrewer)
 library(gridExtra)
+library(viridis)
+library(tibble)
 
 # Read the xlsx output file
 results_distinct <- read_xlsx("/Users/diandra/rlp_meta/results/alldbfull.xlsx")
@@ -171,6 +175,7 @@ jaccard_df <- as.data.frame(as.matrix(jaccard_matrix))
 colnames(jaccard_df) <- file_names[hc$order]
 rownames(jaccard_df) <- file_names[hc$order]
 
+library(tibble)
 # Create the jaccard_df_long data frame with clustering information
 jaccard_df_long <- jaccard_df %>%
   rownames_to_column("Var1") %>%
@@ -190,7 +195,8 @@ jaccard_df_long$Var2 <- factor(jaccard_df_long$Var2, levels = unique(jaccard_df_
 jaccard_plot <- ggplot(jaccard_df_long, aes(x = Var1, y = Var2, fill = value, label = round(value, 2))) + 
   geom_tile() + 
   geom_text(size = 2.5) + 
-  scale_fill_gradient(low = "lightcyan", high = "coral", name = "Jaccard Index") + 
+  scale_fill_viridis(option = "C", name = "Jaccard Index")+
+  #scale_fill_gradient(low = "lightcyan", high = "coral", name = "Jaccard Index") + 
   theme_minimal() + 
   labs(x = "File", y = "File") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
@@ -295,7 +301,8 @@ jaccard_df_long$Var2 <- factor(jaccard_df_long$Var2, levels = unique(jaccard_df_
 jaccard_plot2 <- ggplot(jaccard_df_long, aes(x = Var1, y = Var2, fill = value, label = round(value, 2))) + 
   geom_tile() + 
   geom_text(size = 2.5) + 
-  scale_fill_gradient(low = "lightcyan", high = "coral", name = "Jaccard Index") + 
+  scale_fill_viridis(option = "C", name = "Jaccard Index")+
+  #scale_fill_gradient(low = "lightcyan", high = "coral", name = "Jaccard Index") + 
   theme_minimal() + 
   labs(x = "File", y = "File") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
@@ -396,7 +403,8 @@ jaccard_df_long$Var2 <- factor(jaccard_df_long$Var2, levels = unique(jaccard_df_
 jaccard_plot3 <- ggplot(jaccard_df_long, aes(x = Var1, y = Var2, fill = value, label = round(value, 2))) + 
   geom_tile() + 
   geom_text(size = 2.5) + 
-  scale_fill_gradient(low = "lightcyan", high = "coral", name = "Jaccard Index") + 
+  scale_fill_viridis(option = "C", name = "Jaccard Index")+
+  #scale_fill_gradient(low = "lightcyan", high = "coral", name = "Jaccard Index") + 
   theme_minimal() + 
   labs(x = "File", y = "File") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
