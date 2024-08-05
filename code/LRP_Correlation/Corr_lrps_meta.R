@@ -41,6 +41,8 @@ for (m in dir(m_folder_path, pattern = "*.csv")) {
   m_file_path <- file.path(m_folder_path, m)
   
   # Read the file
+  # Read the file
+  #m <- as.data.frame(read.csv(m_file_path)) # Convert to data frame
   m <- read.csv(m_file_path)
   colnames(m)[1] <- "Protein"
   # Remove rows with NA values in the Protein column
@@ -204,6 +206,8 @@ write.csv(spearman_results, output_file_path, row.names = FALSE)
 #1,956 entries with 2 olinks: 748 unique lrps with alldb_top2_ligand.xlsx
 # 2,468 entries with 2 olinks: 944 unique lrps with alldb_top3_ligand.xlsx
 #2,571 entries with 4 olinks: 948 unique lrps with alldb_top3_ligand.xlsx
+#2,675 entries with 5 olinks: 950 unique lrps with alldb_top3_ligand.xlsx
+#2,686 entries with 6 olinks: 950 unique lrps with alldb_top3_ligand.xlsx
 
 #spearman plots--------------------------------------------------------------------------
 library(tidyverse)
@@ -223,6 +227,9 @@ filtered_results <- filtered_results[!duplicated(filtered_results$lrp, fromLast 
 filtered_results <- filtered_results[order(filtered_results$adjusted_p_value, decreasing = TRUE), ]
 filtered_results <- filtered_results[!duplicated(filtered_results$lrp, fromLast = TRUE), ]
 
+
+duplicates <- subset(spearman_results, duplicated(spearman_results$lrp))
+duplicates <- 
 # Calculate the number of significant and non-significant results
 n_significant <- sum(spearman_results$adjusted_p_value <= 0.05, na.rm = TRUE)
 n_not_significant <- sum(spearman_results$adjusted_p_value > 0.05, na.rm = TRUE)
@@ -259,6 +266,36 @@ ggplot(filtered_results, aes(x = lrp, y = spearman_corr)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ggsave("/Users/diandra/rlp_meta/results/plots/LRPs_Spearman_correlation_adjusted_pvalue0.05_meta.pdf", width = 8, height = 6, units = "in")
+
+
+
+#plot of duplicated lrps
+
+# Filter ligand-receptor pairs with at least 4 occurrences
+duplicated_results <- spearman_results %>%
+  group_by(lrp) %>%
+  filter(n() >= 2)
+# Create the volcano plot
+ggplot(spearman_results, aes(x = spearman_corr, y = -log10(adjusted_p_value))) +
+  geom_point(aes(color = interaction(factor(adjusted_p_value <= 0.05), factor(spearman_corr > 0)))) +
+  scale_color_manual(values = c("TRUE.TRUE" = "orange2", "TRUE.FALSE" = "dodgerblue3", "FALSE.TRUE" = "orange", "FALSE.FALSE" = "dodgerblue1"),
+                     breaks = c("TRUE.TRUE", "TRUE.FALSE", "FALSE.TRUE", "FALSE.FALSE"),
+                     labels = c(paste("<=0.05, + Corr (n = ", sum(spearman_results$adjusted_p_value <= 0.05 & spearman_results$spearman_corr > 0, na.rm = TRUE), ")", sep = ""),
+                                paste("<=0.05, - Corr (n = ", sum(spearman_results$adjusted_p_value <= 0.05 & spearman_results$spearman_corr < 0, na.rm = TRUE), ")", sep = ""),
+                                paste(">0.05, + Corr (n = ", sum(spearman_results$adjusted_p_value > 0.05 & spearman_results$spearman_corr > 0, na.rm = TRUE), ")", sep = ""),
+                                paste(">0.05, - Corr (n = ", sum(spearman_results$adjusted_p_value > 0.05 & spearman_results$spearman_corr < 0, na.rm = TRUE), ")", sep = ""))) +
+  labs(x = "Spearman Correlation", y = "-log10(Adjusted p-value)", color = "p-value & Correlation") +
+  theme_minimal() +
+  ggtitle("LRPs Spearman correlation") +
+  geom_text_repel(aes(label = lrp), 
+                  data = duplicated_results, 
+                  min.segment.length = unit(0.1, "lines"), 
+                  segment.color = "gray", 
+                  max.overlaps = 20, 
+                  size = 2.5)+
+  scale_y_continuous(breaks = c(0, 2.5, 5, 7.5, 10), limits = c(0, 10))+
+  geom_hline(yintercept = -log10(0.05), linetype = "dotted", color = "red")
+ggsave("/Users/diandra/rlp_meta/results/plots/min2LRPs_Spearman_correlation_volcano_meta.pdf", width = 8, height = 6, units = "in")
 
 
 

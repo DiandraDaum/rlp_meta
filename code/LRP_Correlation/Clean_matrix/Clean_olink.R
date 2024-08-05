@@ -149,7 +149,7 @@ df <- df %>%
   filter(.[[1]] != "OlinkID")
 
 # Remove the last four rows
-df <- head(df, -4)
+df <- head(df, -3)
 
 # Set the first row as column names
 colnames(df) <- df[1, ]
@@ -173,10 +173,13 @@ df_transposed <- head(df_transposed, -8)
 df_transposed <- df_transposed %>%
   filter(!is.na(Protein), 
          !is.null(Protein), 
+         !str_detect(Protein, "NA"),
          nchar(as.character(Protein)) <= 8)
 
 #convert to csv
 write.csv(df_transposed, file="~/covid_data/olink_cancer/Clean_olink/Petrera20_new.csv", row.names=FALSE)
+write_xlsx(df_transposed, "~/covid_data/olink_cancer/Clean_olink/Petrera20_new.xlsx")
+
 
 #open again
 m <- read.csv("~/covid_data/olink_cancer/Clean_olink/Petrera20_new.csv")
@@ -192,11 +195,10 @@ m <- m %>%
   filter(!str_detect(Protein, ","))
 
 # Find the removed rows
-removed_rows <- setdiff(m_original$Protein, m$Protein)
-
+#removed_rows <- setdiff(m_original$Protein, m$Protein)
 # Print the removed rows
-print(removed_rows)
-setdiff(m_original$Protein, m$Protein) #NA in row 109
+#print(removed_rows)
+#setdiff(m_original$Protein, m$Protein) #NA in row 109
 #m <- m_original
 # Filter out rows with ;, NA, or NULL in the Protein column
 #m <- m %>% filter(!str_detect(Protein, ",")) %>% filter(!is.na(Protein))
@@ -205,7 +207,9 @@ setdiff(m_original$Protein, m$Protein) #NA in row 109
 library(org.Hs.eg.db)
 protein_map <- mapIds(org.Hs.eg.db, keys=m$Protein, column="SYMBOL", keytype="UNIPROT", multiVals="first")
 m$Protein <- as.character(protein_map)
-m <- as.data.frame(m)
+# Rename duplicate protein names
+m$Protein <- make.unique(as.character(m$Protein), sep = ".")
+#m <- as.data.frame(m)
 #m <- as.matrix(m)
 #m$Protein <- as.character(m$Protein)
 # Convert the Uniprot IDs to gene symbols
@@ -217,3 +221,132 @@ m <- as.data.frame(m)
 write.csv(m, file="~/covid_data/olink_cancer/Clean_olink/Petrera20_new.csv", row.names=FALSE)
 write_xlsx(m, "~/covid_data/olink_cancer/Clean_olink/Petrera20_new.xlsx")
 
+#DEBUG --> IL6 found 2 times!---------------------------------------------------
+m_file_path <- file.path("~/covid_data/olink_cancer/Clean_olink/Petrera20_new.csv") # replace with the actual file name
+m <- read.csv(m_file_path)
+print(str(m))
+print(sapply(m, is.numeric))
+for (i in 1:nrow(m)) {
+  tryCatch(
+    expr = {
+      li_row <- m[i, ]
+      as.numeric(li_row[, -1])
+    },
+    error = function(e) {
+      print(paste("Error occurred at row", i))
+      print(li_row)
+      stop()
+    }
+  )
+}
+m <- read.csv(m_file_path, na.strings = c("", "HERE"))
+
+
+m_file_path <- file.path(m_folder_path, m)
+
+# Read the file
+# Read the file
+#m <- as.data.frame(read.csv(m_file_path)) # Convert to data frame
+m <- read.csv(m_file_path)
+colnames(m)[1] <- "Protein"
+# Remove rows with NA values in the Protein column
+m <- m[!is.na(m$Protein), ]
+
+
+#try corr_lrps_meta loop
+#top2 lrps with at least a count of 2
+database <- read_xlsx("~/rlp_meta/results/alldb_top3_ligand.xlsx")
+# Extracted lrps lists from database
+l <- as.list(database$ligand) # ligands list
+r <- as.list(database$`receptor(s)`) # receptors list
+# Initialize empty lists to store lim and rim
+lim <- list()
+rim <- list()
+file_info_list <- list()
+all_lim_values <- list()
+all_rim_values <- list()
+# Loop over each ligand-receptor pair
+for (i in 1:length(l)) {
+  lii = l[i]
+  rii = r[i]
+  
+  # Test li and ri in m
+  if (lii %in% m$Protein & rii %in% m$Protein) {
+    li_row <- m[m$Protein == lii, ]
+    ri_row <- m[m$Protein == rii, ]
+    lim <- c(lim, list(li_row))
+    rim <- c(rim, list(ri_row))
+    # Create a new row for file_info with correct column names
+    new_row <- data.frame(ligand = lii, receptor = rii, file = basename(m_file_path), stringsAsFactors = FALSE)
+    # Append the new row to file_info_list
+    file_info_list <- c(file_info_list, list(new_row))
+  }
+}
+print(lim)
+# Check if lim or rim is empty
+if (length(lim) > 0) {
+  # Create lim matrix
+  lim_values <- do.call(rbind, lapply(lim, function(x) as.numeric(x[, -1])))
+  rownames(lim_values) <- sapply(lim, function(x) x$Protein)
+  colnames(lim_values) <- 1:ncol(lim_values)
+  
+  # Add lim values to the list
+  all_lim_values <- c(all_lim_values, list(lim_values))
+}
+
+if (length(rim) > 0) {
+  # Create rim matrix
+  rim_values <- do.call(rbind, lapply(rim, function(x) as.numeric(x[, -1])))
+  rownames(rim_values) <- sapply(rim, function(x) x$Protein)
+  colnames(rim_values) <- 1:ncol(rim_values)
+  
+  # Add rim values to the list
+  all_rim_values <- c(all_rim_values, list(rim_values))
+}
+
+
+#clean Kozlova------------------------------------------------------------------
+library(dplyr)
+library(stringr)
+library(readxl)
+library(writexl)
+library(tibble)
+
+# Load the xlsx file
+df <- read_xlsx("~/covid_data/olink_cancer/Kozlova_OlinkONC_2024_lymphoma.xlsx")
+# Remove rows with specific values in the first column
+df <- df %>%
+  filter(.[[1]] != "Assay") %>%
+  filter(.[[1]] != "Olink ID")%>%
+  filter(.[[1]] != "LOD")
+
+# Rename the columns using the second row
+colnames(df) <- df[1, ]
+# Remove the first row
+df <- df[-1, ]
+# Transpose df, keeping the column 1 as a column
+df_transposed <- t(df)
+# Replace the column names with the first row
+colnames(df_transposed) <- df_transposed[1, ]
+# Remove the first row
+df_transposed <- df_transposed[-1, ]
+
+# Add the UniProt IDs as a column
+df_transposed <- data.frame(UniProt = rownames(df_transposed), df_transposed)
+colnames(df_transposed)[1] <- "Protein"
+library(org.Hs.eg.db)
+protein_map <- mapIds(org.Hs.eg.db, keys=df_transposed$Protein, column="SYMBOL", keytype="UNIPROT", multiVals="first")
+df_transposed$Protein <- as.character(protein_map)
+df_transposed$Protein[is.na(df_transposed$Protein)] <- df_transposed$Protein[is.na(df_transposed$Protein)]
+# Rename duplicate protein names
+df_transposed$Protein <- make.unique(as.character(df_transposed$Protein), sep = ".")
+df_transposed <- df_transposed %>%
+  filter(!is.na(df_transposed$Protein)) %>%
+  filter(!is.null(df_transposed$Protein))%>%
+  filter(!str_detect(Protein, ","))
+write.csv(df_transposed, file="~/covid_data/olink_cancer/Clean_olink/Kozlova_OlinkONC_2024_lymphoma.csv", row.names=FALSE)
+
+
+
+
+#clean
