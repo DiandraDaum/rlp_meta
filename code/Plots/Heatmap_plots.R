@@ -189,7 +189,7 @@ file_clusters <- hclust(dist(interaction_matrix), method = "centroid")
 interaction_matrix <- t(interaction_matrix)
 
 # Open a PDF file
-pdf("/Users/diandra/rlp_meta/results/plots/Complexheatmap_top_db3.pdf", width = 10, height = 10)
+pdf("/Users/diandra/rlp_meta/results/plots/Complexheatmap_top1000_db3.pdf", width = 10, height = 10)
 # Create the heatmap using complexheatmap
 Heatmap(interaction_matrix, 
         cluster_columns = file_clusters, 
@@ -198,36 +198,18 @@ Heatmap(interaction_matrix,
         column_title = "Files",
         col = c("#fde725", "#440154"), #viridis based
         rect_gp = gpar(col = "grey8", lwd = 0.2), 
-        show_row_names = TRUE, 
+        show_row_names = FALSE, 
         show_column_names = TRUE
         )
-#draw(ha)
 
 # Close the PDF file
 dev.off()
+library(InteractiveComplexHeatmap)
 library(shiny)
-shiny_env = new.env()
-htShiny(ha)
-ht_shiny(ha)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+htShiny()
+#shiny_env = new.env()
+#ht_shiny(ha)
+#draw(ha)
+#ha = draw(ha)
+#pos = ht_pos_on_device(ha)
+#pos = SelectPosition(ht_list)
