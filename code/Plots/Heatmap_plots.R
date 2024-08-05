@@ -194,13 +194,14 @@ pdf("/Users/diandra/rlp_meta/results/plots/Complexheatmap_top1000_db3.pdf", widt
 Heatmap(interaction_matrix, 
         cluster_columns = file_clusters, 
         cluster_rows = FALSE, 
+        name = "Found in lr DB",
         row_title = "Interactions", 
         column_title = "Files",
         col = c("#fde725", "#440154"), #viridis based
         rect_gp = gpar(col = "grey8", lwd = 0.2), 
         show_row_names = FALSE, 
         show_column_names = TRUE
-        )
+) 
 
 # Close the PDF file
 dev.off()
