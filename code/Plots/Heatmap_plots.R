@@ -144,3 +144,90 @@ heatmap_plot
 # Save the plot as a PDF
 heatmap_plot %>%
   to_image(format = "pdf", out_file = "Top1000_Interactions_heatmap.pdf", width = 800, height = 600)
+
+#complexheatmap-----------------------------------------------------------------
+# Load necessary libraries
+library(dplyr)
+library(readxl)
+library(ComplexHeatmap)
+library(stringr)
+library(grid)
+library(viridis)
+
+# Load the input file
+input_file <- read_xlsx("~/rlp_meta/results/alldb_top3_ligand.xlsx")
+
+# Extract the top 1000 interactions based on the "count" column
+top_interactions <- input_file[order(input_file$count, decreasing = TRUE), ][1:1000, ]
+
+# Extract the file names from the "file" column
+file_names <- top_interactions$file %>%
+  str_split("; ") %>%
+  unlist() %>%
+  unique() %>%
+  sort()
+
+# Create a matrix of presence/absence of the top 10 interactions in the files
+interaction_matrix <- matrix(0, nrow = length(file_names), ncol = nrow(top_interactions))
+rownames(interaction_matrix) <- file_names
+colnames(interaction_matrix) <- top_interactions$interaction
+
+# Populate the matrix with 1s where an interaction is present in a file
+for (i in 1:nrow(top_interactions)) {
+  files <- unlist(str_split(top_interactions$file[i], "; "))
+  for (j in 1:length(files)) {
+    interaction_matrix[which(rownames(interaction_matrix) == files[j]), i] <- 1
+  }
+}
+
+rownames(interaction_matrix) <- sub("([0-9]{2}).*$", "\\1", rownames(interaction_matrix))
+
+# Perform hierarchical clustering on the file names using the centroid method
+file_clusters <- hclust(dist(interaction_matrix), method = "centroid")
+
+#invert column/rows
+interaction_matrix <- t(interaction_matrix)
+
+# Open a PDF file
+pdf("/Users/diandra/rlp_meta/results/plots/Complexheatmap_top_db3.pdf", width = 10, height = 10)
+# Create the heatmap using complexheatmap
+Heatmap(interaction_matrix, 
+        cluster_columns = file_clusters, 
+        cluster_rows = FALSE, 
+        row_title = "Interactions", 
+        column_title = "Files",
+        col = c("#fde725", "#440154"), #viridis based
+        rect_gp = gpar(col = "grey8", lwd = 0.2), 
+        show_row_names = TRUE, 
+        show_column_names = TRUE
+        )
+#draw(ha)
+
+# Close the PDF file
+dev.off()
+library(shiny)
+shiny_env = new.env()
+htShiny(ha)
+ht_shiny(ha)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
