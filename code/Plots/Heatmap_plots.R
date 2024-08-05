@@ -182,8 +182,8 @@ for (i in 1:nrow(top_interactions)) {
 
 rownames(interaction_matrix) <- sub("([0-9]{2}).*$", "\\1", rownames(interaction_matrix))
 
-# Perform hierarchical clustering on the file names using the centroid method
-file_clusters <- hclust(dist(interaction_matrix), method = "centroid")
+# Perform hierarchical clustering on the file names using the average method
+file_clusters <- hclust(dist(interaction_matrix), method = "average")
 
 #invert column/rows
 interaction_matrix <- t(interaction_matrix)
