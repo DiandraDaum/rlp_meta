@@ -532,7 +532,7 @@ library(tibble)
 
 # Load the xlsx file
 df <- read_xlsx("~/covid_data/olink_cancer/Minas_OlinkONC_2023_prostate cancer.xlsx")
-# Remove the third column
+# Remove the column
 df <- df[ , -2]
 df <- df[ , -2]
 df <- df[ , -2]
@@ -571,4 +571,40 @@ df_transposed$Protein <- toupper(df_transposed$Protein)
 write.csv(df_transposed, file="~/covid_data/olink_cancer/Clean_olink/Minas_OlinkONC_2023_prostate cancer_new.csv", row.names=FALSE)
 
 
-#clean 
+#clean Alsawaf------------------------------------------------------------------
+library(dplyr)
+library(stringr)
+library(readxl)
+library(writexl)
+library(tibble)
+
+# Load the xlsx file
+df <- read_csv("~/covid_data/olink_cancer/Al_Sawaf_OlinkONC_2023_TRACERx.csv")
+# Remove the columns
+df <- df[ , -1]
+# Get the column names that meet the condition
+col_names <- which(str_detect(names(df), "SampleID|UniProt|Panel|NPX"))
+# Select the first column and the columns that meet the condition
+df <- df[, c(1, col_names)]
+# Remove the columns
+df <- df[ , -1]
+df <- df[grep("Oncology|Cardiovascular", df$Panel, ignore.case = TRUE), ]
+df <- df %>% select(-c(Panel, Panel_Lot_Nr))
+library(tidyr)
+df_matrix <- pivot_wider(df, 
+                         id_cols = UniProt, 
+                         names_from = SampleID, 
+                         values_from = NPX)
+colnames(df_matrix)[1] <- "Protein"
+library(org.Hs.eg.db)
+protein_map <- mapIds(org.Hs.eg.db, keys=df_matrix$Protein, column="SYMBOL", keytype="UNIPROT", multiVals="first")
+df_matrix$Protein <- as.character(protein_map)
+df_matrix$Protein[is.na(df_matrix$Protein)] <- df_matrix$Protein[is.na(df_matrix$Protein)]
+# Rename duplicate protein names
+df_matrix$Protein <- make.unique(as.character(df_matrix$Protein), sep = ".")
+df_matrix <- df_matrix %>%
+  filter(!is.na(df_matrix$Protein)) %>%
+  filter(!is.null(df_matrix$Protein))%>%
+  filter(!str_detect(Protein, ","))
+write.csv(df_matrix, file="~/covid_data/olink_cancer/Clean_olink/Al_Sawaf_OlinkONC_2023_TRACERx.csv", row.names=FALSE)
+
