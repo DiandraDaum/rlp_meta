@@ -349,4 +349,46 @@ write.csv(df_transposed, file="~/covid_data/olink_cancer/Clean_olink/Kozlova_Oli
 
 
 
-#clean
+#clean Li-----------------------------------------------------------------------
+library(dplyr)
+library(stringr)
+library(readxl)
+library(writexl)
+library(tibble)
+
+# Load the xlsx file
+df <- read_xlsx("~/covid_data/olink_cancer/Li_OlinkONC_2024_Targeted_proteomics_cervical_cancer.xlsx", skip = 4)
+# Remove rows with specific values in the first column
+df <- df %>%
+  filter(!is.na(.[[2]])) %>%
+  filter(.[[1]] != "OlinkID")
+# Remove the last three rows
+df <- head(df, -3)
+# Transpose df, keeping the column 1 as a column
+df_transposed <- t(df)
+# Replace the column names with the first row
+colnames(df_transposed) <- df_transposed[1, ]
+# Remove the first row
+df_transposed <- df_transposed[-1, ]
+
+# Add the UniProt IDs as a column
+df_transposed <- data.frame(UniProt = rownames(df_transposed), df_transposed)
+colnames(df_transposed)[1] <- "Protein"
+library(org.Hs.eg.db)
+protein_map <- mapIds(org.Hs.eg.db, keys=df_transposed$Protein, column="SYMBOL", keytype="UNIPROT", multiVals="first")
+df_transposed$Protein <- as.character(protein_map)
+df_transposed$Protein[is.na(df_transposed$Protein)] <- df_transposed$Protein[is.na(df_transposed$Protein)]
+# Rename duplicate protein names
+df_transposed$Protein <- make.unique(as.character(df_transposed$Protein), sep = ".")
+df_transposed <- df_transposed %>%
+  filter(!is.na(df_transposed$Protein)) %>%
+  filter(!is.null(df_transposed$Protein))%>%
+  filter(!str_detect(Protein, ","))
+# Remove the last four rows
+df_transposed <- head(df_transposed, -4)
+write.csv(df_transposed, file="~/covid_data/olink_cancer/Clean_olink/Li_OlinkONC_2024_Targeted_proteomics_cervical_cancer_new.csv", row.names=FALSE)
+
+
+
+
+
